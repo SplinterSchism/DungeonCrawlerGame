@@ -1,0 +1,41 @@
+article, aside, body, dd, div, dl, dt, figcaption, figure, footer, h1, h2, h3, header, li, nav, ol, p, section, ul {
+  margin: 0;
+  padding: 0;
+}
+
+canvas {
+    border: 1px solid #d3d3d3;
+    background-color: #f1f1f1;
+	
+	/*Makes canvas unselectable */
+	-webkit-touch-callout:none;
+	-webkit-user-select:none;
+	-khtml-user-select:none;
+	-moz-user-select:none;
+	-ms-user-select:none;
+	user-select:none;
+	-webkit-tap-highlight-color:rgba(0,0,0,0);
+}
+
+#box {
+  padding: 0;
+  margin: 0, auto;
+  float: left;
+  width: auto;
+  text-align: center;
+}
+
+@media all and (orientation:portrait) {
+	canvas {
+		width: 100vw;
+	}
+}
+
+@media all and (orientation:landscape) {
+	#box{
+		width: 100vw;
+	}
+	canvas {
+		height: 100vh;
+	}
+}
