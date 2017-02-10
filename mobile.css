@@ -38,4 +38,37 @@ canvas {
 	canvas {
 		height: 100vh;
 	}
+	#upleft {
+		width: 9% !important;
+	}
+	#up {
+		width: 9% !important;
+		left: 9% !important;
+	}
+	#upright {
+		width: 9% !important;
+		left: 18% !important;
+	}
+	#left {
+		width: 9% !important;
+	}
+	#right {
+		width: 9% !important;
+		left: 18% !important;
+	}
+	#downleft {
+		width: 9% !important;
+	}
+	#down {
+		width: 9% !important;
+		left: 9% !important;
+	}
+	#downright {
+		width: 9% !important;
+		left: 18% !important;
+	}
+	#deadzone {
+		width: 9% !important;
+		left: 9% !important;
+	}
 }

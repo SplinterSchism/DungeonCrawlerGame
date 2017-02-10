@@ -3,12 +3,13 @@
 //Variables for components
 var myGamePiece;
 var swordHitbox;
-var direction;
+var direction = "u";
 
 //StartGame: Gets called when loaded. Calls the start method of myGameArea and create components 
 function startGame() {
     myGameArea.start();
 	myGamePiece = new component(30, 30, "red", 10, 120);
+	controls();
 }
 
 //myGameArea: class creates the canvas element and contains the functions to start, clear and stop the game
@@ -42,6 +43,14 @@ var myGameArea = {
     }
 }
 
+function controls() {
+	this.moveForward = false;
+    this.moveBackward = false;
+    this.turnLeft = false;
+    this.turnRight = false;
+    this.shooting = false;
+}
+
 //Class that creates a component object.
 function component(width, height, color, x, y) {
     this.width = width;
@@ -72,13 +81,25 @@ function updateGameArea() {
 	myGamePiece.speedX = 0;
     myGamePiece.speedY = 0; 
 	
-	//Detect Keystrokes and increase speed
+	//Detect touch input and increase speed for Mobile 
+    if (controls.turnLeft) {myGamePiece.speedX = -2; }
+    if (controls.turnRight) {myGamePiece.speedX = 2; }
+    if (controls.moveForward) {myGamePiece.speedY = -2; }
+    if (controls.moveBackward) {myGamePiece.speedY = 2; }
+	
+	//Update direction variable for Mobile
+	if (controls.turnLeft) {direction = "l"; }
+    if (controls.turnRight) {direction = "r"; }
+    if (controls.moveForward) {direction = "u"; }
+    if (controls.moveBackward) {direction = "d"; }
+	
+	//Detect Keystrokes and increase speed for Desktop
     if (myGameArea.keys && myGameArea.keys[37]) {myGamePiece.speedX = -2; }
     if (myGameArea.keys && myGameArea.keys[39]) {myGamePiece.speedX = 2; }
     if (myGameArea.keys && myGameArea.keys[38]) {myGamePiece.speedY = -2; }
     if (myGameArea.keys && myGameArea.keys[40]) {myGamePiece.speedY = 2; }
 	
-	//Update direction variable
+	//Update direction variable for Desktop
 	if (myGameArea.keys && myGameArea.keys[37]) {direction = "l"; }
     if (myGameArea.keys && myGameArea.keys[39]) {direction =  "r"; }
     if (myGameArea.keys && myGameArea.keys[38]) {direction = "u"; }
@@ -86,7 +107,7 @@ function updateGameArea() {
 	
 	
 	//Create swordHitbox when spacebar is pressed
-	if (myGameArea.keys && myGameArea.keys[32]) {
+	if (controls.shooting || (myGameArea.keys && myGameArea.keys[32])) {
 		
 		if (direction == "u") {
 			swordHitbox = new component(8, 30, "blue", (myGamePiece.x + 3), (myGamePiece.y - 28));
@@ -111,8 +132,6 @@ function updateGameArea() {
 	myGamePiece.newPos();
     myGamePiece.update();
 }
-
-
 
 
 //starts the game once the page is loaded.
