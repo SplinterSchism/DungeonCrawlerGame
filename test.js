@@ -3,12 +3,37 @@
 //Variables for components
 var myGamePiece;
 var swordHitbox;
+
+var myHud;
+
+var myWalls = [];
+
+var myBlock;
+var myChest;
+var myEnemy;
+
 var direction = "u";
 
 //StartGame: Gets called when loaded. Calls the start method of myGameArea and create components 
 function startGame() {
     myGameArea.start();
-	myGamePiece = new component(30, 30, "red", 10, 120);
+	myGamePiece = new component(30, 30, "red", 225, 350, "Player");
+	
+	myHud = new component(16, 2, "black", 0, 0, "HUD")
+	
+	myWalls.push(new component(7, 1, "green", 0, 2));
+	myWalls.push(new component(7, 1, "green", 9, 2));
+	myWalls.push(new component(7, 1, "green", 0, 12));
+	myWalls.push(new component(7, 1, "green", 9, 12));
+	myWalls.push(new component(1, 3.5, "green", 0, 3));
+	myWalls.push(new component(1, 3.5, "green", 0, 8.5));
+	myWalls.push(new component(1, 3.5, "green", 15, 3));
+	myWalls.push(new component(1, 3.5, "green", 15, 8.5));
+	
+	myBlock = new component(1, 1, "green", 7, 9, "Block");
+	myChest = new component(1, 1, "purple", 4, 5, "Chest");
+	myEnemy = new component(1, 1, "orange", 10, 7, "Enemy");
+	
 	controls();
 }
 
@@ -19,7 +44,7 @@ var myGameArea = {
 	//Create canvas and start game
     start : function() {
         this.canvas.width = 480;
-        this.canvas.height = 270;
+        this.canvas.height = 390;
         this.context = this.canvas.getContext("2d");
         var box = document.getElementById("box");
         box.insertBefore(this.canvas, box.childNodes[0]);
@@ -52,13 +77,20 @@ function controls() {
 }
 
 //Class that creates a component object.
-function component(width, height, color, x, y) {
-    this.width = width;
-    this.height = height;
+function component(width, height, color, x, y, type) {
+	if(type == "Player" || type == "Sword") {
+		this.width = width;
+		this.height = height;
+		this.x = x;
+		this.y = y;  
+	} else {
+		this.width = width * 30;
+		this.height = height * 30;
+		this.x = x * 30;
+		this.y = y * 30;  
+	}
 	this.speedX = 0;
     this.speedY = 0;
-    this.x = x;
-    this.y = y;  
 	//Draws the component
     this.update = function(){	
 		ctx = myGameArea.context;
@@ -110,16 +142,16 @@ function updateGameArea() {
 	if (controls.shooting || (myGameArea.keys && myGameArea.keys[32])) {
 		
 		if (direction == "u") {
-			swordHitbox = new component(8, 30, "blue", (myGamePiece.x + 3), (myGamePiece.y - 28));
+			swordHitbox = new component(8, 30, "blue", (myGamePiece.x + 3), (myGamePiece.y - 28), "Sword");
 		}
 		else if (direction == "d") { 
-			swordHitbox = new component(8, 30, "blue", (myGamePiece.x + 19), (myGamePiece.y + 28));
+			swordHitbox = new component(8, 30, "blue", (myGamePiece.x + 19), (myGamePiece.y + 28), "Sword");
 		}
 		else if (direction == "l") {
-			swordHitbox = new component(30, 8, "blue", (myGamePiece.x - 28), (myGamePiece.y  + 19));
+			swordHitbox = new component(30, 8, "blue", (myGamePiece.x - 28), (myGamePiece.y  + 19), "Sword");
 		}
 		else if (direction == "r") {
-			swordHitbox = new component(30, 8, "blue", (myGamePiece.x + 28), (myGamePiece.y + 3));
+			swordHitbox = new component(30, 8, "blue", (myGamePiece.x + 28), (myGamePiece.y + 3), "Sword");
 		}
 		
 		swordHitbox.speedX = myGamePiece.speedX;
@@ -131,6 +163,20 @@ function updateGameArea() {
 	//Draw new positions
 	myGamePiece.newPos();
     myGamePiece.update();
+	
+	myHud.update();
+	
+	for (i = 0; i < myWalls.length; i += 1) {
+		myWalls[i].update();
+	}
+	
+	myEnemy.newPos();
+    myEnemy.update();
+	
+	myBlock.update();
+	myChest.update();
+	
+	
 }
 
 
