@@ -202,27 +202,28 @@ function updateGameArea() {
 	}
 	
 	if (myGamePiece.crashWith(myBlock)) {
-		
-		if (myGamePiece.x > myBlock.x){
-			if(myGamePiece.speedX < 0){
-				myGamePiece.speedX = 0;
-		    }
-		} else if (myGamePiece.x < myBlock.x){
-			if(myGamePiece.speedX > 0){
-				myGamePiece.speedX = 0;
-		    }
+		if((myGamePiece.x > (myBlock.x + myBlock.width)-2) || (myBlock.x > (myGamePiece.x + myGamePiece.width) -2)) {
+			if (myGamePiece.x > myBlock.x){
+				if(myGamePiece.speedX < 0){
+					myGamePiece.speedX = 0;
+				}
+			} else if (myGamePiece.x < myBlock.x){
+				if(myGamePiece.speedX > 0){
+					myGamePiece.speedX = 0;
+				}
+			}
 		}
-		
-		
-		if (myGamePiece.y < myBlock.y){
-			if(myGamePiece.speedY > 0){
-				myGamePiece.speedY = 0;
-		    }
-		}
-		if (myGamePiece.y > myBlock.y){
-			if(myGamePiece.speedY < 0){
-				myGamePiece.speedY = 0;
-		    }
+		else {
+			if (myGamePiece.y < myBlock.y){
+				if(myGamePiece.speedY > 0){
+					myGamePiece.speedY = 0;
+				}
+			}
+			if (myGamePiece.y > myBlock.y){
+				if(myGamePiece.speedY < 0){
+					myGamePiece.speedY = 0;
+				}
+			}
 		}
       
 	}
