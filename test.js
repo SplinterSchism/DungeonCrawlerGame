@@ -121,6 +121,28 @@ function component(width, height, color, x, y, type) {
 		}
 			return crash;
 	}
+	
+	this.crashSide = function(otherobj) {
+		var myleft = this.x;
+		var myright = this.x + (this.width);
+		var mytop = this.y;
+		var mybottom = this.y + (this.height);
+		var otherleft = otherobj.x;
+		var otherright = otherobj.x + (otherobj.width);
+		var othertop = otherobj.y;
+		var otherbottom = otherobj.y + (otherobj.height);
+		var crash;
+		if (mybottom > othertop) {
+			crash = "bottom";
+		}if(mytop < otherbottom){
+			crash = "top";
+		}if(myright > otherleft){
+			crash = "right";
+		}if(myleft < otherright){
+			crash = "left"
+		}
+		return crash;
+	}
 }
 
 //updateGameArea: Clears screen then updates every frame.
@@ -178,6 +200,33 @@ function updateGameArea() {
 		swordHitbox.newPos();
 		swordHitbox.update();
 	}
+	
+	if (myGamePiece.crashWith(myBlock)) {
+		if (myGamePiece.x > myBlock.x){
+			if(myGamePiece.speedX < 0){
+				myGamePiece.speedX = 0;
+		    }
+		}
+		if (myGamePiece.x < myBlock.x){
+			if(myGamePiece.speedX > 0){
+				myGamePiece.speedX = 0;
+		    }
+		}
+		if (myGamePiece.y < myBlock.y){
+			if(myGamePiece.speedY > 0){
+				myGamePiece.speedY = 0;
+		    }
+		}
+		if (myGamePiece.y > myBlock.y){
+			if(myGamePiece.speedY < 0){
+				myGamePiece.speedY = 0;
+		    }
+		}
+      
+	}
+	
+	
+	
 	
 	//Draw new positions
 	myGamePiece.newPos();
