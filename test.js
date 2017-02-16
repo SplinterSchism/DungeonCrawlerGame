@@ -122,27 +122,6 @@ function component(width, height, color, x, y, type) {
 			return crash;
 	}
 	
-	this.crashSide = function(otherobj) {
-		var myleft = this.x;
-		var myright = this.x + (this.width);
-		var mytop = this.y;
-		var mybottom = this.y + (this.height);
-		var otherleft = otherobj.x;
-		var otherright = otherobj.x + (otherobj.width);
-		var othertop = otherobj.y;
-		var otherbottom = otherobj.y + (otherobj.height);
-		var crash;
-		if (mybottom > othertop) {
-			crash = "bottom";
-		}if(mytop < otherbottom){
-			crash = "top";
-		}if(myright > otherleft){
-			crash = "right";
-		}if(myleft < otherright){
-			crash = "left"
-		}
-		return crash;
-	}
 }
 
 //updateGameArea: Clears screen then updates every frame.
@@ -201,32 +180,17 @@ function updateGameArea() {
 		swordHitbox.update();
 	}
 	
-	if (myGamePiece.crashWith(myBlock)) {
-		if((myGamePiece.x > (myBlock.x + myBlock.width)-2) || (myBlock.x > (myGamePiece.x + myGamePiece.width) -2)) {
-			if (myGamePiece.x > myBlock.x){
-				if(myGamePiece.speedX < 0){
-					myGamePiece.speedX = 0;
-				}
-			} else if (myGamePiece.x < myBlock.x){
-				if(myGamePiece.speedX > 0){
-					myGamePiece.speedX = 0;
-				}
-			}
+	for (i = 0; i < myWalls.length; i += 1) {
+		if(myGamePiece.crashWith(myWalls[i])){
+			solidCollision(myWalls[i]);
 		}
-		else {
-			if (myGamePiece.y < myBlock.y){
-				if(myGamePiece.speedY > 0){
-					myGamePiece.speedY = 0;
-				}
-			}
-			if (myGamePiece.y > myBlock.y){
-				if(myGamePiece.speedY < 0){
-					myGamePiece.speedY = 0;
-				}
-			}
-		}
-      
 	}
+	
+	//Collsion with blocks
+	if (myGamePiece.crashWith(myBlock)) {
+		solidCollision(myBlock);
+	}
+	
 	
 	
 	
@@ -249,7 +213,31 @@ function updateGameArea() {
 	
 	
 }
-
-
+//solidCollision: sets up collision properties for solid objects
+function solidCollision(myObj) {
+	if((myGamePiece.x > (myObj.x + myObj.width)-2) || (myObj.x > (myGamePiece.x + myGamePiece.width) -2)) {
+		if (myGamePiece.x > myObj.x){
+			if(myGamePiece.speedX < 0){
+				myGamePiece.speedX = 0;
+			}
+		} else if (myGamePiece.x < myObj.x){
+			if(myGamePiece.speedX > 0){
+				myGamePiece.speedX = 0;
+			}
+		}
+	}
+	else {
+		if (myGamePiece.y < myObj.y){
+			if(myGamePiece.speedY > 0){
+				myGamePiece.speedY = 0;
+			}
+		}
+		if (myGamePiece.y > myObj.y){
+			if(myGamePiece.speedY < 0){
+				myGamePiece.speedY = 0;
+			}
+		}
+	}
+}
 //starts the game once the page is loaded.
 window.addEventListener("load", startGame, false);
