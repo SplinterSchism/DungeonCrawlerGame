@@ -8,11 +8,21 @@ var myHud;
 
 var myWalls = [];
 
-var myBlock;
-var myChest;
-var myEnemy;
+var myBlocks = [];
+var myEnemies = [];
 
-var direction = "u";
+var myChest;
+
+
+//Global variables
+var roomX = 0;
+var roomY = 0;
+
+var currentRoom;
+
+var transitionDirection;
+
+var direction = "u"; //FIXME make a part of the myGamePiece component
 
 //StartGame: Gets called when loaded. Calls the start method of myGameArea and create components 
 function startGame() {
@@ -30,9 +40,9 @@ function startGame() {
 	myWalls.push(new component(1, 3.5, "green", 15, 3));
 	myWalls.push(new component(1, 3.5, "green", 15, 8.5));
 	
-	myBlock = new component(1, 1, "green", 7, 9, "Block");
-	myChest = new component(1, 1, "purple", 4, 5, "Chest");
-	myEnemy = new component(1, 1, "orange", 10, 7, "Enemy");
+	loadRoom();
+	createObjects();
+	
 	
 	controls();
 }
@@ -49,8 +59,8 @@ var myGameArea = {
         var box = document.getElementById("box");
         box.insertBefore(this.canvas, box.childNodes[0]);
 		
+		myGameArea.update();
 		
-		this.interval = setInterval(updateGameArea, 20);
 		
 		//Event listeners to detect keystrokes
 		window.addEventListener('keydown', function (e) {
@@ -62,12 +72,27 @@ var myGameArea = {
         })
     },
 	
+	//Runs main loop, update game area
+	update : function() {
+		clearInterval(this.interval);
+		this.interval = setInterval(updateGameArea, 20);
+	},
+	
+	//Runs transition loop
+	transition : function() {
+		clearInterval(this.interval);
+		this.interval = setInterval(updateTransition, 20);
+	},
+	
 	//Clears the screen
 	clear : function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 }
 
+
+
+//Control flags for mobile
 function controls() {
 	this.moveForward = false;
     this.moveBackward = false;
@@ -180,19 +205,34 @@ function updateGameArea() {
 		swordHitbox.update();
 	}
 	
+	//Collision with Walls
 	for (i = 0; i < myWalls.length; i += 1) {
 		if(myGamePiece.crashWith(myWalls[i])){
 			solidCollision(myWalls[i]);
 		}
 	}
 	
-	//Collsion with blocks
-	if (myGamePiece.crashWith(myBlock)) {
-		solidCollision(myBlock);
+	//Collsion with Blocks
+	for (i = 0; i < myBlocks.length; i += 1) {
+		if (myGamePiece.crashWith(myBlocks[i])) {
+			solidCollision(myBlocks[i]);
+		}
 	}
 	
 	
-	
+	//Detect if entering a new room
+	if(myGamePiece.y < 45) {
+		changeRoom("North");
+	}
+	if(myGamePiece.y > 375) {
+		changeRoom("South")
+	}
+	if(myGamePiece.x < -15) {
+		changeRoom("West")
+	}
+	if(myGamePiece.x > 465) {
+		changeRoom("East")
+	}
 	
 	
 	//Draw new positions
@@ -205,14 +245,70 @@ function updateGameArea() {
 		myWalls[i].update();
 	}
 	
-	myEnemy.newPos();
-    myEnemy.update();
+	for (i = 0; i < myBlocks.length; i += 1) {
+		myBlocks[i].update();
+	}
+	for (i = 0; i < myEnemies.length; i += 1) {
+		myEnemies[i].newPos();
+		myEnemies[i].update();
+	}
 	
-	myBlock.update();
 	myChest.update();
+}
+
+function updateTransition() {
+	if (transitionDirection == "North") {
+		if(myGamePiece.y < 370) {
+			myGamePiece.speedY = 6;
+			myGameArea.clear();
+			myGamePiece.newPos();
+			myGamePiece.update();
+		}
+		else {
+			myGamePiece.speedY = 0;
+			myGameArea.update();
+		}
+	}
+	if (transitionDirection == "South") {
+		if(myGamePiece.y > 50) {
+			myGamePiece.speedY = -6;
+			myGameArea.clear();
+			myGamePiece.newPos();
+			myGamePiece.update();
+		}
+		else {
+			myGamePiece.speedY = 0;
+			myGameArea.update();
+		}
+	}
+	if (transitionDirection == "West") {
+		if(myGamePiece.x < 460) {
+			myGamePiece.speedX = 6;
+			myGameArea.clear();
+			myGamePiece.newPos();
+			myGamePiece.update();
+		}
+		else {
+			myGamePiece.speedX = 0;
+			myGameArea.update();
+		}
+	}
+	if (transitionDirection == "East") {
+		if(myGamePiece.x > -10) {
+			myGamePiece.speedX = -6;
+			myGameArea.clear();
+			myGamePiece.newPos();
+			myGamePiece.update();
+		}
+		else {
+			myGamePiece.speedX = 0;
+			myGameArea.update();
+		}
+	}
 	
 	
 }
+
 //solidCollision: sets up collision properties for solid objects
 function solidCollision(myObj) {
 	if((myGamePiece.x > (myObj.x + myObj.width)-2) || (myObj.x > (myGamePiece.x + myGamePiece.width) -2)) {
@@ -226,7 +322,7 @@ function solidCollision(myObj) {
 			}
 		}
 	}
-	else {
+	else if((myGamePiece.y > (myObj.y + myObj.height) -2) || (myObj.y > (myGamePiece.y + myGamePiece.height) -2)){
 		if (myGamePiece.y < myObj.y){
 			if(myGamePiece.speedY > 0){
 				myGamePiece.speedY = 0;
@@ -239,5 +335,69 @@ function solidCollision(myObj) {
 		}
 	}
 }
+
+function changeRoom(direction) {
+	
+	transitionDirection = direction;
+	
+	//saveRoom();
+	deleteObjects();
+	myGameArea.transition();
+	updateRoom();
+	loadRoom();
+	createObjects();
+}
+
+function createObjects() {
+	for (i = 0; i < currentRoom.numBlocks; i += 1) {
+		myBlocks.push(new component(1, 1, "green", currentRoom.blockX[i], currentRoom.blockY[i]));
+	}
+	
+	for (i = 0; i < currentRoom.numEnemies; i += 1) {
+		myEnemies.push(new component(1, 1, "orange", currentRoom.enemyX[i], currentRoom.enemyY[i]));
+	}
+	
+	myChest = new component(1, 1, "purple", currentRoom.chestX, currentRoom.chestY, "Chest");
+	
+}
+
+function deleteObjects() {
+	for (i = 0; i < currentRoom.numBlocks; i += 1) {
+		myBlocks.pop();
+	}
+	for (i = 0; i < currentRoom.numEnemies; i += 1) {
+		myEnemies.pop();
+	}
+	
+	myChest = null;
+}
+
+function updateRoom(){
+	if(transitionDirection == "North") {
+		roomY = roomY + 1;
+	}
+	else if(transitionDirection == "South") {
+		roomY = roomY - 1;
+	}
+	else if(transitionDirection == "East") {
+		roomX = roomX + 1;
+	}
+	else if(transitionDirection == "West") {
+		roomX = roomX - 1;
+	}
+}
+
+function loadRoom() {
+	room1 = { "numBlocks":4, "blockX":[7, 7, 10, 11], "blockY":[9, 8, 5, 5], "numEnemies":1, "enemyX":[10], "enemyY":[7]};
+	room2 = { "numBlocks":2, "blockX":[7, 3], "blockY":[9, 5], "chestX":4, "chestY":5};
+	room3 = { "chestX":8, "chestY":9};
+	room4 = { "numEnemies":2, "enemyX":[5, 8], "enemyY":[7, 4]};
+	
+	myRooms = [[room1, room2],[room3, room4]];
+	
+	currentRoom = myRooms[roomX][roomY];
+}	
+
+
 //starts the game once the page is loaded.
 window.addEventListener("load", startGame, false);
