@@ -28,7 +28,7 @@ var direction = "u"; //FIXME make a part of the myGamePiece component
 function startGame() {
     myGameArea.start();
 	myGamePiece = new component(30, 30, "red", 225, 350, "Player");
-
+  swordHitbox = new component(8, 30, "blue", (myGamePiece.x + 3), (myGamePiece.y - 28), "Sword");
 	myHud = new component(16, 2, "black", 0, 0, "HUD")
 
 	myWalls.push(new component(7, 1, "green", 0, 2));
@@ -39,10 +39,10 @@ function startGame() {
 	myWalls.push(new component(1, 3.5, "green", 0, 8.5));
 	myWalls.push(new component(1, 3.5, "green", 15, 3));
 	myWalls.push(new component(1, 3.5, "green", 15, 8.5));
-	
+
 	loadRoom();
 	createObjects();
-	
+
 	controls();
 }
 
@@ -58,10 +58,10 @@ var myGameArea = {
         var box = document.getElementById("box");
         box.insertBefore(this.canvas, box.childNodes[0]);
 
-		
+
 		myGameArea.update();
-		
-	
+
+
 		//Event listeners to detect keystrokes
 		window.addEventListener('keydown', function (e) {
             myGameArea.keys = (myGameArea.keys || []);
@@ -71,13 +71,13 @@ var myGameArea = {
             myGameArea.keys[e.keyCode] = false;
         })
     },
-	
+
 	//Runs main loop, update game area
 	update : function() {
 		clearInterval(this.interval);
 		this.interval = setInterval(updateGameArea, 20);
 	},
-	
+
 	//Runs transition loop
 	transition : function() {
 		clearInterval(this.interval);
@@ -154,6 +154,7 @@ function updateGameArea() {
 	//Clear screen
     myGameArea.clear();
 
+
 	//set myGamePiece initial speed to 0
 	myGamePiece.speedX = 0;
     myGamePiece.speedY = 0;
@@ -213,7 +214,13 @@ function updateGameArea() {
 		swordHitbox.update();
 	}
 
-	
+  //Sword and enemy Collision
+  for (i = 0; i < myEnemies.length; i += 1) {
+    if(swordHitbox.crashWith(myEnemies[i])){
+      myEnemies.pop(i);
+     }
+  }
+
 	//Collision with Walls
 	for (i = 0; i < myWalls.length; i += 1) {
 		if(myGamePiece.crashWith(myWalls[i])){
@@ -221,15 +228,21 @@ function updateGameArea() {
 		}
 	}
 
-	
+
 	//Collsion with Blocks
 	for (i = 0; i < myBlocks.length; i += 1) {
 		if (myGamePiece.crashWith(myBlocks[i])) {
 			solidCollision(myBlocks[i]);
 		}
 	}
-	
-	
+
+  //Collision with enemies
+  for (i = 0; i < myEnemies.length; i += 1) {
+    if (myGamePiece.crashWith(myEnemies[i])) {
+      solidCollision(myEnemies[i]);
+    }
+  }
+
 	//Detect if entering a new room
 	if(myGamePiece.y < 45) {
 		changeRoom("North");
@@ -243,8 +256,8 @@ function updateGameArea() {
 	if(myGamePiece.x > 465) {
 		changeRoom("East")
 	}
-	
-	
+
+
 	//Draw new positions
 	myGamePiece.newPos();
     myGamePiece.update();
@@ -254,7 +267,7 @@ function updateGameArea() {
 	for (i = 0; i < myWalls.length; i += 1) {
 		myWalls[i].update();
 	}
-	
+
 	for (i = 0; i < myBlocks.length; i += 1) {
 		myBlocks[i].update();
 	}
@@ -262,8 +275,9 @@ function updateGameArea() {
 		myEnemies[i].newPos();
 		myEnemies[i].update();
 	}
-	
+
 	myChest.update();
+
 }
 
 
@@ -320,7 +334,7 @@ function updateTransition() {
 			myGameArea.update();
 		}
 	}
-	
+
 }
 
 //solidCollision: sets up collision properties for solid objects
@@ -351,9 +365,9 @@ function solidCollision(myObj) {
 }
 
 function changeRoom(direction) {
-	
+
 	transitionDirection = direction;
-	
+
 	//saveRoom();
 	deleteObjects();
 	myGameArea.transition();
@@ -366,13 +380,13 @@ function createObjects() {
 	for (i = 0; i < currentRoom.numBlocks; i += 1) {
 		myBlocks.push(new component(1, 1, "green", currentRoom.blockX[i], currentRoom.blockY[i]));
 	}
-	
+
 	for (i = 0; i < currentRoom.numEnemies; i += 1) {
 		myEnemies.push(new component(1, 1, "orange", currentRoom.enemyX[i], currentRoom.enemyY[i]));
 	}
-	
+
 	myChest = new component(1, 1, "purple", currentRoom.chestX, currentRoom.chestY, "Chest");
-	
+
 }
 
 function deleteObjects() {
@@ -382,7 +396,7 @@ function deleteObjects() {
 	for (i = 0; i < currentRoom.numEnemies; i += 1) {
 		myEnemies.pop();
 	}
-	
+
 	myChest = null;
 }
 
@@ -406,11 +420,11 @@ function loadRoom() {
 	room2 = { "numBlocks":2, "blockX":[7, 3], "blockY":[9, 5], "chestX":4, "chestY":5};
 	room3 = { "chestX":8, "chestY":9};
 	room4 = { "numEnemies":2, "enemyX":[5, 8], "enemyY":[7, 4]};
-	
+
 	myRooms = [[room1, room2],[room3, room4]];
-	
+
 	currentRoom = myRooms[roomX][roomY];
-}	
+}
 
 
 //starts the game once the page is loaded.
