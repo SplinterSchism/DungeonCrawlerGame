@@ -266,10 +266,12 @@ function updateGameArea() {
 	myChest.update();
 }
 
+
 function updateTransition() {
 	if (transitionDirection == "North") {
 		if(myGamePiece.y < 370) {
 			myGamePiece.speedY = 6;
+			myGamePiece.speedX = 0;
 			myGameArea.clear();
 			myGamePiece.newPos();
 			myGamePiece.update();
@@ -282,6 +284,7 @@ function updateTransition() {
 	if (transitionDirection == "South") {
 		if(myGamePiece.y > 50) {
 			myGamePiece.speedY = -6;
+			myGamePiece.speedX = 0;
 			myGameArea.clear();
 			myGamePiece.newPos();
 			myGamePiece.update();
@@ -294,6 +297,7 @@ function updateTransition() {
 	if (transitionDirection == "West") {
 		if(myGamePiece.x < 460) {
 			myGamePiece.speedX = 6;
+			myGamePiece.speedY = 0;
 			myGameArea.clear();
 			myGamePiece.newPos();
 			myGamePiece.update();
@@ -306,6 +310,7 @@ function updateTransition() {
 	if (transitionDirection == "East") {
 		if(myGamePiece.x > -10) {
 			myGamePiece.speedX = -6;
+			myGamePiece.speedY = 0;
 			myGameArea.clear();
 			myGamePiece.newPos();
 			myGamePiece.update();
