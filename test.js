@@ -217,7 +217,7 @@ function updateGameArea() {
   //Sword and enemy Collision
   for (i = 0; i < myEnemies.length; i += 1) {
     if(swordHitbox.crashWith(myEnemies[i])){
-      myEnemies.pop(i);
+      myEnemies.splice(i,1);
      }
   }
 
@@ -416,7 +416,7 @@ function updateRoom(){
 }
 
 function loadRoom() {
-	room1 = { "numBlocks":4, "blockX":[7, 7, 10, 11], "blockY":[9, 8, 5, 5], "numEnemies":1, "enemyX":[10], "enemyY":[7]};
+	room1 = { "numBlocks":4, "blockX":[7, 7, 10, 11], "blockY":[9, 8, 5, 5], "numEnemies":2, "enemyX":[10, 6], "enemyY":[7, 8]};
 	room2 = { "numBlocks":2, "blockX":[7, 3], "blockY":[9, 5], "chestX":4, "chestY":5};
 	room3 = { "chestX":8, "chestY":9};
 	room4 = { "numEnemies":2, "enemyX":[5, 8], "enemyY":[7, 4]};
