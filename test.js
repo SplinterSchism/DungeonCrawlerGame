@@ -13,6 +13,10 @@ var myEnemies = [];
 
 var myChest;
 
+//HUD variables
+var myHearts;
+var numHearts = 3;
+
 
 //Global variables
 var roomX = 0;
@@ -24,15 +28,17 @@ var level;
 
 var transitionDirection;
 
-var direction = "u"; //FIXME make a part of the myGamePiece component
+var direction = "u"; //FIXME make a part of the myGamePiece component?
 
 //StartGame: Gets called when loaded. Calls the start method of myGameArea and create components
 function startGame() {
-    myGameArea.start();
+    
 	myGamePiece = new component(30, 30, "red", 225, 350, "Player");
-  swordHitbox = new component(8, 30, "blue", (myGamePiece.x + 3), (myGamePiece.y - 28), "Sword");
-	myHud = new component(16, 2, "black", 0, 0, "HUD")
-
+    swordHitbox = new component(8, 30, "blue", (myGamePiece.x + 3), (myGamePiece.y - 28), "Sword");
+	
+	myHud = new component(16, 2, "black", 0, 0, "HUD");
+	myHearts = new component("30px", "Consolas", "red",40, 40, "text");
+	
 	myWalls.push(new component(7, 1, "green", 0, 2));
 	myWalls.push(new component(7, 1, "green", 9, 2));
 	myWalls.push(new component(7, 1, "green", 0, 12));
@@ -53,6 +59,8 @@ function startGame() {
 	else {
 		level = localStorage.getItem("level");
 	}
+	
+	myGameArea.start();
 }
 
 //myGameArea: class creates the canvas element and contains the functions to start, clear and stop the game
@@ -96,7 +104,12 @@ var myGameArea = {
 	//Clears the screen
 	clear : function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
+    },
+	
+	//Ends the game
+	stop : function() {
+		clearInterval(this.interval);
+	}
 }
 
 
@@ -112,12 +125,13 @@ function controls() {
 
 //Class that creates a component object.
 function component(width, height, color, x, y, type) {
-	if(type == "Player" || type == "Sword") {
+	if(type == "Player" || type == "Sword" || type == "text") {
 		this.width = width;
 		this.height = height;
 		this.x = x;
 		this.y = y;
-	} else {
+	} 
+	else {
 		this.width = width * 30;
 		this.height = height * 30;
 		this.x = x * 30;
@@ -125,11 +139,20 @@ function component(width, height, color, x, y, type) {
 	}
 	this.speedX = 0;
     this.speedY = 0;
+	
 	//Draws the component
     this.update = function(){
 		ctx = myGameArea.context;
+		if (type == "text") {
+			ctx.font = this.width + " " + this.height;
+			ctx.fillStyle = color;
+			ctx.strokeText(this.text, this.x, this.y)
+			ctx.fillText(this.text, this.x, this.y);	
+		} 
+		else {
 		ctx.fillStyle = color;
 		ctx.fillRect(this.x, this.y, this.width, this.height);
+		}
 	}
 	//Increments the position by components speed
 	this.newPos = function() {
@@ -160,6 +183,9 @@ function component(width, height, color, x, y, type) {
 
 //updateGameArea: Clears screen then updates every frame.
 function updateGameArea() {
+	//Condition to end game
+	if (numHearts < 1) myGameArea.stop();
+	
 	//Clear screen
     myGameArea.clear();
 
@@ -224,7 +250,6 @@ function updateGameArea() {
 	}
 
   //Sword and enemy Collision
-
   for (i = 0; i < currentRoom.numEnemies; i += 1) {
     if(swordHitbox.crashWith(myEnemies[i])){
       myEnemies.splice(i,1);
@@ -251,7 +276,7 @@ function updateGameArea() {
   //Collision with enemies
   for (i = 0; i < myEnemies.length; i += 1) {
     if (myGamePiece.crashWith(myEnemies[i])) {
-      solidCollision(myEnemies[i]);
+      damageCollision(myEnemies[i]);
     }
   }
 
@@ -273,8 +298,11 @@ function updateGameArea() {
 	//Draw new positions
 	myGamePiece.newPos();
     myGamePiece.update();
-
+    
+	//update HUD
 	myHud.update();
+	myHearts.text = numHearts;
+	myHearts.update();
 
 	for (i = 0; i < myWalls.length; i += 1) {
 		myWalls[i].update();
@@ -289,6 +317,8 @@ function updateGameArea() {
 	}
 
 	myChest.update();
+	
+	
 
 }
 
@@ -374,6 +404,35 @@ function solidCollision(myObj) {
 			}
 		}
 	}
+}
+
+//damageCollision: sets up collision properties for damaging objects
+function damageCollision(myObj) {
+	if((myGamePiece.x > (myObj.x + myObj.width)-2) || (myObj.x > (myGamePiece.x + myGamePiece.width) -2)) {
+		if (myGamePiece.x > myObj.x){
+			if(myGamePiece.speedX < 0){
+				myGamePiece.speedX = 30;
+			}
+		} else if (myGamePiece.x < myObj.x){
+			if(myGamePiece.speedX > 0){
+				myGamePiece.speedX = -30;
+			}
+		}
+	}
+	else if((myGamePiece.y > (myObj.y + myObj.height) -2) || (myObj.y > (myGamePiece.y + myGamePiece.height) -2)){
+		if (myGamePiece.y < myObj.y){
+			if(myGamePiece.speedY > 0){
+				myGamePiece.speedY = -30;
+			}
+		}
+		if (myGamePiece.y > myObj.y){
+			if(myGamePiece.speedY < 0){
+				myGamePiece.speedY = 30;
+			}
+		}
+	}
+	
+	numHearts = numHearts - 1;
 }
 
 function changeRoom(direction) {
