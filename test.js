@@ -163,6 +163,7 @@ function updateGameArea() {
 	//Clear screen
     myGameArea.clear();
 
+
 	//set myGamePiece initial speed to 0
 	myGamePiece.speedX = 0;
     myGamePiece.speedY = 0;
@@ -223,10 +224,12 @@ function updateGameArea() {
 	}
 
   //Sword and enemy Collision
+
   for (i = 0; i < currentRoom.numEnemies; i += 1) {
     if(swordHitbox.crashWith(myEnemies[i])){
       myEnemies.splice(i,1);
 	  currentRoom.numEnemies = currentRoom.numEnemies - 1;
+
      }
   }
 
