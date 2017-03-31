@@ -10,12 +10,15 @@ var myWalls = [];
 
 var myBlocks = [];
 var myEnemies = [];
+var myDeadEnds = [];
 
 var myChest;
 
 //HUD variables
 var myHearts;
 var numHearts = 3;
+var myMoney;
+var numMoney = 0;
 
 
 //Global variables
@@ -33,11 +36,12 @@ var direction = "u"; //FIXME make a part of the myGamePiece component?
 //StartGame: Gets called when loaded. Calls the start method of myGameArea and create components
 function startGame() {
     
-	myGamePiece = new component(30, 30, "red", 225, 350, "Player");
+	myGamePiece = new component(30, 30, "red", 225, 325, "Player");
     swordHitbox = new component(8, 30, "blue", (myGamePiece.x + 3), (myGamePiece.y - 28), "Sword");
 	
 	myHud = new component(16, 2, "black", 0, 0, "HUD");
 	myHearts = new component("30px", "Consolas", "red",40, 40, "text");
+	myMoney = new component("30px", "Consolas", "green",120, 40, "text");
 	
 	myWalls.push(new component(7, 1, "green", 0, 2));
 	myWalls.push(new component(7, 1, "green", 9, 2));
@@ -74,8 +78,11 @@ var myGameArea = {
         this.context = this.canvas.getContext("2d");
         var box = document.getElementById("box");
         box.insertBefore(this.canvas, box.childNodes[0]);
-
-
+		
+		//Variable to count frames
+		this.frameNo = 0;
+		
+		//Starts the game
 		myGameArea.update();
 
 
@@ -149,9 +156,19 @@ function component(width, height, color, x, y, type) {
 			ctx.strokeText(this.text, this.x, this.y)
 			ctx.fillText(this.text, this.x, this.y);	
 		} 
+		else if (type == "Chest"){
+			if(currentRoom.chestState == "opened"){
+				ctx.fillStyle = "black"
+				ctx.fillRect(this.x, this.y, this.width, this.height);
+			}
+			else {
+				ctx.fillStyle = color;
+				ctx.fillRect(this.x, this.y, this.width, this.height);
+			}
+		}
 		else {
-		ctx.fillStyle = color;
-		ctx.fillRect(this.x, this.y, this.width, this.height);
+			ctx.fillStyle = color;
+			ctx.fillRect(this.x, this.y, this.width, this.height);
 		}
 	}
 	//Increments the position by components speed
@@ -188,7 +205,9 @@ function updateGameArea() {
 	
 	//Clear screen
     myGameArea.clear();
-
+	
+	//Count frames
+	myGameArea.frameNo += 1;
 
 	//set myGamePiece initial speed to 0
 	myGamePiece.speedX = 0;
@@ -249,14 +268,28 @@ function updateGameArea() {
 		swordHitbox.update();
 	}
 
-  //Sword and enemy Collision
-  for (i = 0; i < currentRoom.numEnemies; i += 1) {
-    if(swordHitbox.crashWith(myEnemies[i])){
-      myEnemies.splice(i,1);
-	  currentRoom.numEnemies = currentRoom.numEnemies - 1;
+	//Sword and enemy Collision
+	for (i = 0; i < currentRoom.numEnemies; i += 1) {
+		if(swordHitbox.crashWith(myEnemies[i])){
+			myEnemies.splice(i,1);
+			currentRoom.numEnemies = currentRoom.numEnemies - 1;
 
-     }
-  }
+		}
+	}
+	
+	//sword and chest collision
+	if(currentRoom.chestState == "unopened"){
+		if(swordHitbox.crashWith(myChest)){
+			if (currentRoom.chestContents == "heart"){
+				numHearts = numHearts + currentRoom.chestValue;
+			}
+			if (currentRoom.chestContents == "money"){
+				numMoney = numMoney + currentRoom.chestValue;
+			}
+			
+			currentRoom.chestState = "opened"
+		}
+	}
 
 	//Collision with Walls
 	for (i = 0; i < myWalls.length; i += 1) {
@@ -272,13 +305,27 @@ function updateGameArea() {
 			solidCollision(myBlocks[i]);
 		}
 	}
+	
+	//Collsion with deadEnds
+	for (i = 0; i < myDeadEnds.length; i += 1) {
+		if (myGamePiece.crashWith(myDeadEnds[i])) {
+			solidCollision(myDeadEnds[i]);
+		}
+	}
+	
+	if (myGamePiece.crashWith(myChest)) {
+			solidCollision(myChest);
+		}
 
-  //Collision with enemies
-  for (i = 0; i < myEnemies.length; i += 1) {
-    if (myGamePiece.crashWith(myEnemies[i])) {
-      damageCollision(myEnemies[i]);
-    }
-  }
+	//Collision with enemies
+	for (i = 0; i < myEnemies.length; i += 1) {
+		if (myGamePiece.crashWith(myEnemies[i])) {
+			damageCollision(myEnemies[i]);
+		}
+	}
+	
+	//make enemies move
+	enemyMovement();
 
 	//Detect if entering a new room
 	if(myGamePiece.y < 45) {
@@ -303,6 +350,8 @@ function updateGameArea() {
 	myHud.update();
 	myHearts.text = numHearts;
 	myHearts.update();
+	myMoney.text = numMoney;
+	myMoney.update();
 
 	for (i = 0; i < myWalls.length; i += 1) {
 		myWalls[i].update();
@@ -315,11 +364,22 @@ function updateGameArea() {
 		myEnemies[i].newPos();
 		myEnemies[i].update();
 	}
+	for (i = 0; i < myDeadEnds.length; i += 1) {
+		myDeadEnds[i].newPos();
+		myDeadEnds[i].update();
+	}
 
+	
 	myChest.update();
 	
 	
 
+}
+
+//everyInterval: Returns true if the frameNo is a multiple of the parameter.
+function everyInterval(n) {
+	if ((myGameArea.frameNo / n) % 1 == 0 ) {return true;}
+	return false;
 }
 
 
@@ -455,9 +515,24 @@ function createObjects() {
 	for (i = 0; i < currentRoom.numEnemies; i += 1) {
 		myEnemies.push(new component(1, 1, "orange", currentRoom.enemyX[i], currentRoom.enemyY[i]));
 	}
-
+	
+	for (i = 0; i < currentRoom.numDeadEnd; i += 1) {
+		if (currentRoom.deadEnd[i] == "n"){
+			myDeadEnds.push(new component(2, 1, "blue", 7, 2));
+		}
+		if (currentRoom.deadEnd[i] == "e"){
+			myDeadEnds.push(new component(1, 2, "blue", 15, 6.5));
+		}
+		if (currentRoom.deadEnd[i] == "s"){
+			myDeadEnds.push(new component(2, 1, "blue", 7, 12));
+		}
+		if (currentRoom.deadEnd[i] == "w"){
+			myDeadEnds.push(new component(1, 2, "blue", 0, 6.5));
+		}
+	}
+    
 	myChest = new component(1, 1, "purple", currentRoom.chestX, currentRoom.chestY, "Chest");
-
+	
 }
 
 function deleteObjects() {
@@ -466,6 +541,9 @@ function deleteObjects() {
 	}
 	for (i = 0; i < currentRoom.numEnemies; i += 1) {
 		myEnemies.pop();
+	}
+	for (i = 0; i < currentRoom.numDeadEnd; i += 1) {
+		myDeadEnds.pop();
 	}
 
 	myChest = null;
@@ -493,10 +571,10 @@ function updateRoom(){
 }
 
 function loadRoom() {
-	room1 = { "numBlocks":4, "blockX":[7, 7, 10, 11], "blockY":[9, 8, 5, 5], "numEnemies":2, "enemyX":[10, 6], "enemyY":[7, 8]};
-	room2 = { "numBlocks":2, "blockX":[7, 3], "blockY":[9, 5], "chestX":4, "chestY":5};
-	room3 = { "chestX":8, "chestY":9};
-	room4 = { "numEnemies":2, "enemyX":[5, 8], "enemyY":[7, 4]};
+	room1 = { "numBlocks":4, "blockX":[7, 7, 10, 11], "blockY":[9, 8, 5, 5], "numEnemies":2, "enemyX":[10, 6], "enemyY":[7, 8], "deadEnd":["s","w"], "numDeadEnd":2};
+	room2 = { "numBlocks":2, "blockX":[7, 3], "blockY":[9, 5], "chestX":4, "chestY":5, "chestState":"unopened", "chestContents":"heart", "chestValue":1, "deadEnd":["n","w"], "numDeadEnd":2};
+	room3 = { "chestX":8, "chestY":9, "chestState":"unopened", "chestContents":"money", "chestValue":200, "deadEnd":["s","e"], "numDeadEnd":2};
+	room4 = { "numEnemies":2, "enemyX":[5, 8], "enemyY":[7, 4], "deadEnd":["n","e"], "numDeadEnd":2};
 
 	myRooms = [[room1, room2],[room3, room4]];
 	myJsonRooms = [["room1", "room2"], ["room3", "room4"]];
@@ -509,6 +587,27 @@ function loadRoom() {
 		currentRoom = JSON.parse(text);
 		
 	}
+}
+
+//Enemy Movement
+function enemyMovement() {
+	for (i = 0; i < myEnemies.length; i += 1) {
+		rndDirection = Math.floor(Math.random() * 4) + 1;
+		if(everyInterval(20)){
+			if (rndDirection == 1) {
+				myEnemies[i].y += 15;
+			}
+			if (rndDirection == 2) {
+				myEnemies[i].y -= 15;
+			}
+			if (rndDirection == 3) {
+				myEnemies[i].x += 15;
+			}
+			if (rndDirection == 4) {
+				myEnemies[i].x -= 15;
+			}
+		}
+ 	}
 }
 
 
