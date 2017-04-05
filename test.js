@@ -322,7 +322,9 @@ function updateGameArea() {
 	//Collision with enemies
 	for (i = 0; i < myEnemies.length; i += 1) {
 		if (myGamePiece.crashWith(myEnemies[i])) {
-			damageCollision(myEnemies[i]);
+			damageCollision(myEnemies[i], myGamePiece);
+			enemyCollision(myGamePiece, myEnemies[i]);
+			numHearts = numHearts - 1;
 		}
 	}
 	
@@ -505,32 +507,57 @@ function solidCollision(myObj, myObj2) {
 }
 
 //damageCollision: sets up collision properties for damaging objects
-function damageCollision(myObj) {
-	if((myGamePiece.x > (myObj.x + myObj.width)-2) || (myObj.x > (myGamePiece.x + myGamePiece.width) -2)) {
-		if (myGamePiece.x > myObj.x){
-			if(myGamePiece.speedX < 0){
-				myGamePiece.speedX = 30;
+function damageCollision(myObj, myObj2) {
+	if((myObj2.x > (myObj.x + myObj.width)-2) || (myObj.x > (myObj2.x + myObj2.width) -2)) {
+		if (myObj2.x > myObj.x){
+			if(myObj2.speedX < 0){
+				myObj2.speedX = 30;
 			}
-		} else if (myGamePiece.x < myObj.x){
-			if(myGamePiece.speedX > 0){
-				myGamePiece.speedX = -30;
-			}
-		}
-	}
-	else if((myGamePiece.y > (myObj.y + myObj.height) -2) || (myObj.y > (myGamePiece.y + myGamePiece.height) -2)){
-		if (myGamePiece.y < myObj.y){
-			if(myGamePiece.speedY > 0){
-				myGamePiece.speedY = -30;
-			}
-		}
-		if (myGamePiece.y > myObj.y){
-			if(myGamePiece.speedY < 0){
-				myGamePiece.speedY = 30;
+		} else if (myObj2.x < myObj.x){
+			if(myObj2.speedX > 0){
+				myObj2.speedX = -30;
 			}
 		}
 	}
-	
-	numHearts = numHearts - 1;
+	else if((myObj2.y > (myObj.y + myObj.height) -2) || (myObj.y > (myObj2.y + myObj2.height) -2)){
+		if (myObj2.y < myObj.y){
+			if(myObj2.speedY > 0){
+				myObj2.speedY = -30;
+			}
+		}
+		if (myObj2.y > myObj.y){
+			if(myObj2.speedY < 0){
+				myObj2.speedY = 30;
+			}
+		}
+	}
+}
+
+//enemyCollision: sets up collision properties for damaging objects
+function enemyCollision(myObj, myObj2) {
+	if((myObj2.x > (myObj.x + myObj.width)-2) || (myObj.x > (myObj2.x + myObj2.width) -2)) {
+		if (myObj2.x > myObj.x){
+			if(myObj2.speedX < 0){
+				myObj.speedX = -30;
+			}
+		} else if (myObj2.x < myObj.x){
+			if(myObj2.speedX > 0){
+				myObj.speedX = 30;
+			}
+		}
+	}
+	else if((myObj2.y > (myObj.y + myObj.height) -2) || (myObj.y > (myObj2.y + myObj2.height) -2)){
+		if (myObj2.y < myObj.y){
+			if(myObj2.speedY > 0){
+				myObj.speedY = 30;
+			}
+		}
+		if (myObj2.y > myObj.y){
+			if(myObj2.speedY < 0){
+				myObj.speedY = -30;
+			}
+		}
+	}
 }
 
 function changeRoom(direction) {
@@ -648,7 +675,7 @@ function loadRoom() {
 function enemyMovement() {
 	for (i = 0; i < myEnemies.length; i += 1) {
 		rndDirection = Math.floor(Math.random() * 4) + 1;
-		if(everyInterval(40)){
+		if(everyInterval(30)){
 			if (rndDirection == 1) {
 				myEnemies[i].speedX = 0;
 				myEnemies[i].speedY = 1;
