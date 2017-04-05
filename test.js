@@ -12,6 +12,7 @@ var myBlocks = [];
 var myEnemies = [];
 
 var myDeadEnds = [];
+var myDoors = [];
 
 var myChest;
 
@@ -20,6 +21,8 @@ var myHearts;
 var numHearts = 3;
 var myMoney;
 var numMoney = 0;
+var myKeys;
+var numKeys = 0;
 
 
 //Global variables
@@ -41,8 +44,9 @@ function startGame() {
     swordHitbox = new component(0, 0, "blue", 0, 0, "Sword");
 	
 	myHud = new component(16, 2, "black", 0, 0, "HUD");
-	myHearts = new component("30px", "Consolas", "red",40, 40, "text");
-	myMoney = new component("30px", "Consolas", "green",120, 40, "text");
+	myHearts = new component("30px", "Consolas", "red", 40, 40, "text");
+	myMoney = new component("30px", "Consolas", "green", 120, 40, "text");
+	myKeys = new component("30px", "Consolas", "blue", 200, 40, "text");
 	
 	myWalls.push(new component(7, 1, "green", 0, 2));
 	myWalls.push(new component(7, 1, "green", 9, 2));
@@ -278,6 +282,17 @@ function updateGameArea() {
 		}
 	}
 	
+	//Sword and enemy Collision
+	for (i = 0; i < currentRoom.numDoors; i += 1) {
+		if(swordHitbox.crashWith(myDoors[i])){
+			if(numKeys > 0) {
+				myDoors.splice(i,1);
+				currentRoom.numDoors = currentRoom.numDoors - 1;
+				numKeys = numKeys - 1;
+			}
+		}
+	}
+	
 	//sword and chest collision
 	if(currentRoom.chestState == "unopened"){
 		if(swordHitbox.crashWith(myChest)){
@@ -286,6 +301,9 @@ function updateGameArea() {
 			}
 			if (currentRoom.chestContents == "money"){
 				numMoney = numMoney + currentRoom.chestValue;
+			}
+			if (currentRoom.chestContents == "key"){
+				numKeys = numKeys + currentRoom.chestValue;
 			}
 			
 			currentRoom.chestState = "opened"
@@ -311,6 +329,13 @@ function updateGameArea() {
 	for (i = 0; i < myDeadEnds.length; i += 1) {
 		if (myGamePiece.crashWith(myDeadEnds[i])) {
 			solidCollision(myDeadEnds[i], myGamePiece);
+		}
+	}
+	
+	//Collision with doors
+	for (i = 0; i < myDoors.length; i += 1) {
+		if (myGamePiece.crashWith(myDoors[i])) {
+			solidCollision(myDoors[i], myGamePiece);
 		}
 	}
 	
@@ -391,6 +416,8 @@ function updateGameArea() {
 	myHearts.update();
 	myMoney.text = numMoney;
 	myMoney.update();
+	myKeys.text = numKeys;
+	myKeys.update();
 
 	for (i = 0; i < myWalls.length; i += 1) {
 		myWalls[i].update();
@@ -406,6 +433,10 @@ function updateGameArea() {
 	for (i = 0; i < myDeadEnds.length; i += 1) {
 		myDeadEnds[i].newPos();
 		myDeadEnds[i].update();
+	}
+	for (i = 0; i < myDoors.length; i += 1) {
+		myDoors[i].newPos();
+		myDoors[i].update();
 	}
 
 	
@@ -595,6 +626,21 @@ function createObjects() {
 			myDeadEnds.push(new component(1, 2, "green", 0, 6.5));
 		}
 	}
+	
+	for (i = 0; i < currentRoom.numDoors; i += 1) {
+		if (currentRoom.door[i] == "n"){
+			myDoors.push(new component(2, 1, "blue", 7, 2));
+		}
+		if (currentRoom.door[i] == "e"){
+			myDoors.push(new component(1, 2, "blue", 15, 6.5));
+		}
+		if (currentRoom.door[i] == "s"){
+			myDoors.push(new component(2, 1, "blue", 7, 12));
+		}
+		if (currentRoom.door[i] == "w"){
+			myDoors.push(new component(1, 2, "blue", 0, 6.5));
+		}
+	}
     
 	myChest = new component(1, 1, "purple", currentRoom.chestX, currentRoom.chestY, "Chest");
 	
@@ -610,6 +656,10 @@ function deleteObjects() {
 	for (i = 0; i < currentRoom.numDeadEnd; i += 1) {
 		myDeadEnds.pop();
 	}
+	for (i = 0; i < currentRoom.numDoors; i += 1) {
+		myDoors.pop();
+	}
+	
 
 	myChest = null;
 }
@@ -639,6 +689,7 @@ function loadRoom() {
 	room1 = { 
 	"numBlocks":12, "blockX":[9, 9, 9, 9, 9, 9, 8, 7, 6, 5, 2, 1], "blockY":[3, 4, 5, 6, 7, 8, 8, 8, 8, 8, 8, 8],
 	"numEnemies":2, "enemyX":[3, 12], "enemyY":[7, 5],
+	"door":["n"], "numDoors":1,
 	"deadEnd":["s","w"], "numDeadEnd":2};
 	
 	room2 = { 
@@ -649,7 +700,7 @@ function loadRoom() {
 	room3 = { 
 	"numBlocks":22, "blockX":[1, 2, 3, 4, 4, 4, 4, 4, 5, 6, 7, 8, 9, 10, 11, 11, 11, 11, 10, 9, 8, 7], "blockY":[5, 5, 5, 5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 8, 7, 6, 6, 6, 6, 6],
 	"numEnemies":3, "enemyX":[4, 6, 13], "enemyY":[11, 4, 8], 
-	"chestX":10, "chestY":8, "chestState":"unopened", "chestContents":"heart", "chestValue":1,
+	"chestX":10, "chestY":8, "chestState":"unopened", "chestContents":"key", "chestValue":1,
 	"deadEnd":["s","e"], "numDeadEnd":2};
 	
 	room4 = { 
