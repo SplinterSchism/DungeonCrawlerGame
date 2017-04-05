@@ -10,6 +10,7 @@ var myWalls = [];
 
 var myBlocks = [];
 var myEnemies = [];
+
 var myDeadEnds = [];
 
 var myChest;
@@ -35,9 +36,9 @@ var direction = "u"; //FIXME make a part of the myGamePiece component?
 
 //StartGame: Gets called when loaded. Calls the start method of myGameArea and create components
 function startGame() {
-    
+	
 	myGamePiece = new component(30, 30, "red", 225, 325, "Player");
-    swordHitbox = new component(8, 30, "blue", (myGamePiece.x + 3), (myGamePiece.y - 28), "Sword");
+    swordHitbox = new component(0, 0, "blue", 0, 0, "Sword");
 	
 	myHud = new component(16, 2, "black", 0, 0, "HUD");
 	myHearts = new component("30px", "Consolas", "red",40, 40, "text");
@@ -294,27 +295,28 @@ function updateGameArea() {
 	//Collision with Walls
 	for (i = 0; i < myWalls.length; i += 1) {
 		if(myGamePiece.crashWith(myWalls[i])){
-			solidCollision(myWalls[i]);
+			solidCollision(myWalls[i], myGamePiece);
 		}
 	}
 
 
-	//Collsion with Blocks
+	//Collision with Blocks
 	for (i = 0; i < myBlocks.length; i += 1) {
 		if (myGamePiece.crashWith(myBlocks[i])) {
-			solidCollision(myBlocks[i]);
+			solidCollision(myBlocks[i], myGamePiece);
 		}
 	}
 	
-	//Collsion with deadEnds
+	//Collision with deadEnds
 	for (i = 0; i < myDeadEnds.length; i += 1) {
 		if (myGamePiece.crashWith(myDeadEnds[i])) {
-			solidCollision(myDeadEnds[i]);
+			solidCollision(myDeadEnds[i], myGamePiece);
 		}
 	}
 	
+	//Collision with chests
 	if (myGamePiece.crashWith(myChest)) {
-			solidCollision(myChest);
+			solidCollision(myChest, myGamePiece);
 		}
 
 	//Collision with enemies
@@ -326,6 +328,41 @@ function updateGameArea() {
 	
 	//make enemies move
 	enemyMovement();
+	
+	//Enemy Collision with Walls
+	for (i = 0; i < myEnemies.length; i += 1) {
+		for (j = 0; j < myWalls.length; j += 1) {
+			if (myEnemies[i].crashWith(myWalls[j])) {
+				solidCollision(myWalls[j], myEnemies[i]);
+			}
+		}
+	}
+	
+	//Enemy Collision with Blocks
+	for (i = 0; i < myEnemies.length; i += 1) {
+		for (j = 0; j < myBlocks.length; j += 1) {
+			if (myEnemies[i].crashWith(myBlocks[j])) {
+				solidCollision(myBlocks[j], myEnemies[i]);
+			}
+		}
+	}
+	
+	//Enemy Collision with deadEnds
+	for (i = 0; i < myEnemies.length; i += 1) {
+		for (j = 0; j < myDeadEnds.length; j += 1) {
+			if (myEnemies[i].crashWith(myDeadEnds[j])) {
+				solidCollision(myDeadEnds[j], myEnemies[i]);
+			}
+		}
+	}
+	
+	//Enemy Collision with Walls
+	for (i = 0; i < myEnemies.length; i += 1) {
+		if (myEnemies[i].crashWith(myChest)) {
+			solidCollision(myChest, myEnemies[i]);
+		}
+	}
+	
 
 	//Detect if entering a new room
 	if(myGamePiece.y < 45) {
@@ -440,27 +477,28 @@ function updateTransition() {
 }
 
 //solidCollision: sets up collision properties for solid objects
-function solidCollision(myObj) {
-	if((myGamePiece.x > (myObj.x + myObj.width)-2) || (myObj.x > (myGamePiece.x + myGamePiece.width) -2)) {
-		if (myGamePiece.x > myObj.x){
-			if(myGamePiece.speedX < 0){
-				myGamePiece.speedX = 0;
+function solidCollision(myObj, myObj2) {
+	if((myObj2.x > (myObj.x + myObj.width)-2) || (myObj.x > (myObj2.x + myObj2.width) -2)) {
+		if (myObj2.x > myObj.x){
+			if(myObj2.speedX < 0){
+				myObj2.speedX = 0;
 			}
-		} else if (myGamePiece.x < myObj.x){
-			if(myGamePiece.speedX > 0){
-				myGamePiece.speedX = 0;
+		} else if (myObj2.x < myObj.x){
+			if(myObj2.speedX > 0){
+				myObj2.speedX = 0;
 			}
 		}
 	}
-	else if((myGamePiece.y > (myObj.y + myObj.height) -2) || (myObj.y > (myGamePiece.y + myGamePiece.height) -2)){
-		if (myGamePiece.y < myObj.y){
-			if(myGamePiece.speedY > 0){
-				myGamePiece.speedY = 0;
+	
+	else if((myObj2.y > (myObj.y + myObj.height) -2) || (myObj.y > (myObj2.y + myObj2.height) -2)){
+		if (myObj2.y < myObj.y){
+			if(myObj2.speedY > 0){
+				myObj2.speedY = 0;
 			}
 		}
-		if (myGamePiece.y > myObj.y){
-			if(myGamePiece.speedY < 0){
-				myGamePiece.speedY = 0;
+		if (myObj2.y > myObj.y){
+			if(myObj2.speedY < 0){
+				myObj2.speedY = 0;
 			}
 		}
 	}
@@ -518,16 +556,16 @@ function createObjects() {
 	
 	for (i = 0; i < currentRoom.numDeadEnd; i += 1) {
 		if (currentRoom.deadEnd[i] == "n"){
-			myDeadEnds.push(new component(2, 1, "blue", 7, 2));
+			myDeadEnds.push(new component(2, 1, "green", 7, 2));
 		}
 		if (currentRoom.deadEnd[i] == "e"){
-			myDeadEnds.push(new component(1, 2, "blue", 15, 6.5));
+			myDeadEnds.push(new component(1, 2, "green", 15, 6.5));
 		}
 		if (currentRoom.deadEnd[i] == "s"){
-			myDeadEnds.push(new component(2, 1, "blue", 7, 12));
+			myDeadEnds.push(new component(2, 1, "green", 7, 12));
 		}
 		if (currentRoom.deadEnd[i] == "w"){
-			myDeadEnds.push(new component(1, 2, "blue", 0, 6.5));
+			myDeadEnds.push(new component(1, 2, "green", 0, 6.5));
 		}
 	}
     
@@ -571,10 +609,27 @@ function updateRoom(){
 }
 
 function loadRoom() {
-	room1 = { "numBlocks":4, "blockX":[7, 7, 10, 11], "blockY":[9, 8, 5, 5], "numEnemies":2, "enemyX":[10, 6], "enemyY":[7, 8], "deadEnd":["s","w"], "numDeadEnd":2};
-	room2 = { "numBlocks":2, "blockX":[7, 3], "blockY":[9, 5], "chestX":4, "chestY":5, "chestState":"unopened", "chestContents":"heart", "chestValue":1, "deadEnd":["n","w"], "numDeadEnd":2};
-	room3 = { "chestX":8, "chestY":9, "chestState":"unopened", "chestContents":"money", "chestValue":200, "deadEnd":["s","e"], "numDeadEnd":2};
-	room4 = { "numEnemies":2, "enemyX":[5, 8], "enemyY":[7, 4], "deadEnd":["n","e"], "numDeadEnd":2};
+	room1 = { 
+	"numBlocks":12, "blockX":[9, 9, 9, 9, 9, 9, 8, 7, 6, 5, 2, 1], "blockY":[3, 4, 5, 6, 7, 8, 8, 8, 8, 8, 8, 8],
+	"numEnemies":2, "enemyX":[3, 12], "enemyY":[7, 5],
+	"deadEnd":["s","w"], "numDeadEnd":2};
+	
+	room2 = { 
+	"numBlocks":16, "blockX":[1, 4, 5, 5, 5, 1, 4, 5, 5, 5, 11, 11, 11, 11, 11, 11], "blockY":[9, 9, 9, 10, 11, 5, 5, 5, 4, 3, 3, 4, 5, 6, 7, 8],
+	"numEnemies":2, "enemyX":[5, 13], "enemyY":[7, 7], 
+	"chestX":1, "chestY": 11, "chestState":"unopened", "chestContents":"heart", "chestValue":1};
+	
+	room3 = { 
+	"numBlocks":22, "blockX":[1, 2, 3, 4, 4, 4, 4, 4, 5, 6, 7, 8, 9, 10, 11, 11, 11, 11, 10, 9, 8, 7], "blockY":[5, 5, 5, 5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 8, 7, 6, 6, 6, 6, 6],
+	"numEnemies":3, "enemyX":[4, 6, 13], "enemyY":[11, 4, 8], 
+	"chestX":10, "chestY":8, "chestState":"unopened", "chestContents":"heart", "chestValue":1,
+	"deadEnd":["s","e"], "numDeadEnd":2};
+	
+	room4 = { 
+	"numBlocks":15, "blockX":[5, 5 , 5, 5, 5, 6, 7, 8, 9, 10, 11, 11, 11, 11, 11], "blockY":[11, 10, 9, 8, 7, 7, 7, 7, 7, 7, 7, 8, 9, 10, 11],
+	"numEnemies":1, "enemyX":[8], "enemyY":[8], 
+	"deadEnd":["e"], "numDeadEnd":1};
+	
 
 	myRooms = [[room1, room2],[room3, room4]];
 	myJsonRooms = [["room1", "room2"], ["room3", "room4"]];
@@ -593,18 +648,22 @@ function loadRoom() {
 function enemyMovement() {
 	for (i = 0; i < myEnemies.length; i += 1) {
 		rndDirection = Math.floor(Math.random() * 4) + 1;
-		if(everyInterval(20)){
+		if(everyInterval(40)){
 			if (rndDirection == 1) {
-				myEnemies[i].y += 15;
+				myEnemies[i].speedX = 0;
+				myEnemies[i].speedY = 1;
 			}
 			if (rndDirection == 2) {
-				myEnemies[i].y -= 15;
+				myEnemies[i].speedX = 0;
+				myEnemies[i].speedY = -1;
 			}
 			if (rndDirection == 3) {
-				myEnemies[i].x += 15;
+				myEnemies[i].speedY = 0;
+				myEnemies[i].speedX = 1;
 			}
 			if (rndDirection == 4) {
-				myEnemies[i].x -= 15;
+				myEnemies[i].speedY = 0;
+				myEnemies[i].speedX = -1;
 			}
 		}
  	}
