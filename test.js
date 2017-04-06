@@ -69,6 +69,7 @@ function startGame() {
 		level = localStorage.getItem("level");
 	}
 	
+	
 	myGameArea.start();
 }
 
@@ -399,7 +400,7 @@ function updateGameArea() {
 		}
 	}
 	
-	//Enemy Collision with Walls
+	//Enemy Collision with Chests
 	for (i = 0; i < myEnemies.length; i += 1) {
 		if (myEnemies[i].crashWith(myChest)) {
 			solidCollision(myChest, myEnemies[i]);
@@ -707,7 +708,7 @@ function deleteObjects() {
 }
 	
 function saveRoom() {
-	myJsonRooms = [["room1", "room2"], ["room3", "room4"]];
+	myJsonRooms = [["room1", "room2",  "room5",  "room7"], ["room3", "room4", "room6", "room10"], ["", "", "room8", "room9"]];
 	text = JSON.stringify(currentRoom);
 	localStorage.setItem(myJsonRooms[roomX][roomY], text);
 }
@@ -732,8 +733,8 @@ function loadRoom() {
 	rooms();
 	
 	//Defines how rooms are organized in realtion to each other
-	myRooms = [[room1, room2, room5],[room3, room4, room6], [ , , room9]];
-	myJsonRooms = [["room1", "room2", "room5"], ["room3", "room4", "room6"], ["", "", "room9"]];
+	myRooms = [[room1, room2, room5, room7],[room3, room4, room6,  room10], [ , , room8, room9]];
+	myJsonRooms = [["room1", "room2", "room5", "room7"], ["room3", "room4", "room6", "room10"], ["", "", "room8", "room9"]];
 	
 	if(localStorage.getItem(myJsonRooms[roomX][roomY]) === null) {
 		currentRoom = myRooms[roomX][roomY];
