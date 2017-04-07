@@ -38,6 +38,7 @@ function rooms1() {
 	"deadEnd":["w", "e"], "numDeadEnd":2,
 	"chestX":11, "chestY":7, "chestState":"unopened", "chestContents":"money", "chestValue":100,
 	"numGoals":1, "goalX":[4], "goalY":[7]};
+
 	
 	room8 = { 
 	"numBlocks":10, "blockX":[1, 2, 3, 4, 1, 2, 3, 4], "blockY":[9, 9, 9, 9, 5, 5, 5, 5],
@@ -56,13 +57,6 @@ function rooms1() {
 	"chestX":10, "chestY":7, "chestState":"unopened", "chestContents":"key", "chestValue":1,
 	"deadEnd":["w", "n"], "numDeadEnd":2};
 	
-
-	//"numEnemies":5, "enemyX":[1, 5, 8, 13, 13], "enemyY":[7, 4, 8, 4, 11]}
-	
-	
-	//Defines how rooms are organized in realtion to each other	
-	
-	
 	myRooms = [[room1, room2, room5, room7],[room3, room4, room6,  room10], [ , , room8, room9]];
 	myJsonRooms = [["room1", "room2", "room5", "room7"], ["room3", "room4", "room6", "room10"], ["", "", "room8", "room9"]];
 }
@@ -71,7 +65,7 @@ function rooms2() {
 	room1 = {
 	"numEnemies":5, "enemyX":[1, 5, 8, 13, 13], "enemyY":[7, 4, 8, 4, 11]}
 	
-	
 	myRooms = [[room1]];
 	myJsonRooms = [["room1"]];
+
 }

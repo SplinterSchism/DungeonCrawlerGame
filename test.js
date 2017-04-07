@@ -415,7 +415,7 @@ function updateGameArea() {
 		}
 	}
 	
-	//Enemy Collision with Walls
+	//Enemy Collision with Chests
 	for (i = 0; i < myEnemies.length; i += 1) {
 		if (myEnemies[i].crashWith(myChest)) {
 			solidCollision(myChest, myEnemies[i]);
@@ -743,7 +743,6 @@ function updateRoom(){
 }
 
 function loadRoom() {
-	
 	if (level == 1){
 		rooms1();
 	} else if (level == 2){
