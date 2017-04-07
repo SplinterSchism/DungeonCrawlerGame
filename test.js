@@ -14,7 +14,8 @@ var myEnemies = [];
 var myDeadEnds = [];
 var myDoors = [];
 
-var myChest;
+var myChest = null;
+var myGoals = [];
 
 //HUD variables
 var myHearts;
@@ -24,17 +25,12 @@ var numMoney = 0;
 var myKeys;
 var numKeys = 0;
 
-
 //Global variables
 var roomX = 0;
 var roomY = 0;
-
+var level = 1;
 var currentRoom;
-
-var level;
-
 var transitionDirection;
-
 var direction = "u"; //FIXME make a part of the myGamePiece component?
 
 //StartGame: Gets called when loaded. Calls the start method of myGameArea and create components
@@ -59,16 +55,7 @@ function startGame() {
 
 	loadRoom();
 	createObjects();
-
 	controls();
-	
-	if(localStorage.getItem("level") === null){
-		level = 1;
-	}
-	else {
-		level = localStorage.getItem("level");
-	}
-	
 	myGameArea.start();
 }
 
@@ -89,7 +76,6 @@ var myGameArea = {
 		
 		//Starts the game
 		myGameArea.update();
-
 
 		//Event listeners to detect keystrokes
 		window.addEventListener('keydown', function (e) {
@@ -120,11 +106,32 @@ var myGameArea = {
 	
 	//Ends the game
 	stop : function() {
+		myGameArea.clear();
 		clearInterval(this.interval);
+		numHearts = 3;
+		numMoney = 0;
+		numKeys = 0;
+		roomX = 0;
+		roomY = 0;
+		GoalsFlag = 0;
+		window.localStorage.clear();
+		deleteObjects();
+		startGame();
+	},
+	
+	next : function() {
+		myGameArea.clear();
+		level = level + 1;
+		clearInterval(this.interval);
+		numKeys = 0;
+		roomX = 0;
+		roomY = 0;
+		Flag = false;
+		window.localStorage.clear()
+		deleteObjects();
+		startGame();
 	}
 }
-
-
 
 //Control flags for mobile
 function controls() {
@@ -207,7 +214,7 @@ function component(width, height, color, x, y, type) {
 function updateGameArea() {
 	//Condition to end game
 	if (numHearts < 1) myGameArea.stop();
-	
+    
 	//Clear screen
     myGameArea.clear();
 	
@@ -249,7 +256,6 @@ function updateGameArea() {
     if (myGameArea.keys && myGameArea.keys[68]) {direction =  "r"; }  //D
     if (myGameArea.keys && myGameArea.keys[87]) {direction = "u"; }   //W
     if (myGameArea.keys && myGameArea.keys[83]) {direction = "d"; }   //S
-
 
 	//Create swordHitbox when spacebar is pressed
 	if (controls.shooting || (myGameArea.keys && myGameArea.keys[32])) {
@@ -352,6 +358,7 @@ function updateGameArea() {
 	for (i = 0; i < myDoors.length; i += 1) {
 		if (myGamePiece.crashWith(myDoors[i])) {
 			solidCollision(myDoors[i], myGamePiece);
+			
 		}
 	}
 	
@@ -359,6 +366,15 @@ function updateGameArea() {
 	if (myGamePiece.crashWith(myChest)) {
 			solidCollision(myChest, myGamePiece);
 		}
+		
+		//Collision with Goals
+	for(i = 0; i < myGoals.length; i+=1) {
+		if (myGamePiece.crashWith(myGoals[i])) {
+				solidCollision(myGoals[i], myGamePiece);
+				myGameArea.next();
+			}
+	}
+
 
 	//Collision with enemies
 	for (i = 0; i < myEnemies.length; i += 1) {
@@ -406,7 +422,6 @@ function updateGameArea() {
 		}
 	}
 	
-
 	//Detect if entering a new room
 	if(myGamePiece.y < 45) {
 		changeRoom("North");
@@ -420,7 +435,6 @@ function updateGameArea() {
 	if(myGamePiece.x > 465) {
 		changeRoom("East")
 	}
-
 
 	//Draw new positions
 	myGamePiece.newPos();
@@ -454,11 +468,11 @@ function updateGameArea() {
 		myDoors[i].newPos();
 		myDoors[i].update();
 	}
-
+	for (i = 0; i < myGoals.length; i += 1) {
+		myGoals[i].update();
+	}
 	
-	myChest.update();
-	
-	
+	myChest.update();	
 
 }
 
@@ -467,7 +481,6 @@ function everyInterval(n) {
 	if ((myGameArea.frameNo / n) % 1 == 0 ) {return true;}
 	return false;
 }
-
 
 function updateTransition() {
 	if (transitionDirection == "North") {
@@ -634,9 +647,7 @@ function swordCollision(myObj) {
 }
 
 function changeRoom(direction) {
-
 	transitionDirection = direction;
-
 	saveRoom();
 	deleteObjects();
 	myGameArea.transition();
@@ -652,6 +663,10 @@ function createObjects() {
 
 	for (i = 0; i < currentRoom.numEnemies; i += 1) {
 		myEnemies.push(new component(1, 1, "orange", currentRoom.enemyX[i], currentRoom.enemyY[i]));
+	}
+	
+	for (i = 0; i < currentRoom.numGoals; i += 1) {
+		myGoals.push(new component(1, 1, "pink", currentRoom.goalX[i], currentRoom.goalY[i]));
 	}
 	
 	for (i = 0; i < currentRoom.numDeadEnd; i += 1) {
@@ -685,7 +700,6 @@ function createObjects() {
 	}
     
 	myChest = new component(1, 1, "purple", currentRoom.chestX, currentRoom.chestY, "Chest");
-	
 }
 
 function deleteObjects() {
@@ -701,13 +715,14 @@ function deleteObjects() {
 	for (i = 0; i < currentRoom.numDoors; i += 1) {
 		myDoors.pop();
 	}
-	
+	for (i = 0; i < currentRoom.numGoals; i += 1) {
+		myGoals.pop();
+	}
 
 	myChest = null;
 }
 	
 function saveRoom() {
-	myJsonRooms = [["room1", "room2"], ["room3", "room4"]];
 	text = JSON.stringify(currentRoom);
 	localStorage.setItem(myJsonRooms[roomX][roomY], text);
 }
@@ -728,12 +743,14 @@ function updateRoom(){
 }
 
 function loadRoom() {
-	//Defines each room
-	rooms();
 	
-	//Defines how rooms are organized in realtion to each other
-	myRooms = [[room1, room2, room5],[room3, room4, room6], [ , , room9]];
-	myJsonRooms = [["room1", "room2", "room5"], ["room3", "room4", "room6"], ["", "", "room9"]];
+	if (level == 1){
+		rooms1();
+	} else if (level == 2){
+		myRooms = [];
+		myJsonRooms = [];
+		rooms2();
+	}
 	
 	if(localStorage.getItem(myJsonRooms[roomX][roomY]) === null) {
 		currentRoom = myRooms[roomX][roomY];
@@ -741,7 +758,6 @@ function loadRoom() {
 	else{
 		text = localStorage.getItem(myJsonRooms[roomX][roomY]);
 		currentRoom = JSON.parse(text);
-		
 	}
 }
 
@@ -769,7 +785,6 @@ function enemyMovement() {
 		}
  	}
 }
-
 
 //starts the game once the page is loaded.
 window.addEventListener("load", startGame, false);
