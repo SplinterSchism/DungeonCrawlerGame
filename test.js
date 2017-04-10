@@ -17,6 +17,9 @@ var myDoors = [];
 var myChest = null;
 var myGoals = [];
 
+//Animation Variables
+spriteFrame = 0;
+
 //HUD variables
 var myHearts;
 var numHearts = 3;
@@ -36,7 +39,7 @@ var direction = "u"; //FIXME make a part of the myGamePiece component?
 //StartGame: Gets called when loaded. Calls the start method of myGameArea and create components
 function startGame() {
 	
-	myGamePiece = new component(30, 30, "red", 225, 325, "Player");
+	myGamePiece = new component(32, 32, "images/DungeonMan.png", 225, 325, "Player");
     swordHitbox = new component(0, 0, "blue", 0, 0, "Sword");
 	
 	myHud = new component(16, 2, "black", 0, 0, "HUD");
@@ -144,6 +147,13 @@ function controls() {
 
 //Class that creates a component object.
 function component(width, height, color, x, y, type) {
+	this.type = type;
+	
+	if(type == "Player"){
+		this.image = new Image();
+		this.image.src = color;
+	}
+	
 	if(type == "Player" || type == "Sword" || type == "text") {
 		this.width = width;
 		this.height = height;
@@ -162,7 +172,15 @@ function component(width, height, color, x, y, type) {
 	//Draws the component
     this.update = function(){
 		ctx = myGameArea.context;
-		if (type == "text") {
+		
+		if(type == "Player"){
+			ctx.drawImage(this.image, 
+				(spriteFrame * this.width), 0,
+				this.width, this.height,
+				this.x, this.y,
+				this.width, this.height);
+		}
+		else if (type == "text") {
 			ctx.font = this.width + " " + this.height;
 			ctx.fillStyle = color;
 			ctx.strokeText(this.text, this.x, this.y)
@@ -225,37 +243,36 @@ function updateGameArea() {
 	myGamePiece.speedX = 0;
     myGamePiece.speedY = 0;
 
-	//Detect touch input and increase speed for Mobile
-    if (controls.turnLeft) {myGamePiece.speedX = -2; }
-    if (controls.turnRight) {myGamePiece.speedX = 2; }
-    if (controls.moveForward) {myGamePiece.speedY = -2; }
-    if (controls.moveBackward) {myGamePiece.speedY = 2; }
-
-	//Update direction variable for Mobile
-	if (controls.turnLeft) {direction = "l"; }
-    if (controls.turnRight) {direction = "r"; }
-    if (controls.moveForward) {direction = "u"; }
-    if (controls.moveBackward) {direction = "d"; }
-
-	//Detect Keystrokes and increase speed for Desktop
-    if (myGameArea.keys && myGameArea.keys[37]) {myGamePiece.speedX = -2; } //Left
-    if (myGameArea.keys && myGameArea.keys[39]) {myGamePiece.speedX = 2; }  //Right
-    if (myGameArea.keys && myGameArea.keys[38]) {myGamePiece.speedY = -2; } //Up
-    if (myGameArea.keys && myGameArea.keys[40]) {myGamePiece.speedY = 2; }  //Down
-    if (myGameArea.keys && myGameArea.keys[65]) {myGamePiece.speedX = -2; }  //A
-    if (myGameArea.keys && myGameArea.keys[68]) {myGamePiece.speedX = 2; }  //D
-    if (myGameArea.keys && myGameArea.keys[87]) {myGamePiece.speedY = -2; }  //W
-    if (myGameArea.keys && myGameArea.keys[83]) {myGamePiece.speedY = 2; }  //S
-
-	//Update direction variable for Desktop
-	if (myGameArea.keys && myGameArea.keys[37]) {direction = "l"; }     //Left
-    if (myGameArea.keys && myGameArea.keys[39]) {direction =  "r"; }  //Right
-    if (myGameArea.keys && myGameArea.keys[38]) {direction = "u"; }   //Up
-    if (myGameArea.keys && myGameArea.keys[40]) {direction = "d"; }   //Down
-    if (myGameArea.keys && myGameArea.keys[65]) {direction = "l"; }   //A
-    if (myGameArea.keys && myGameArea.keys[68]) {direction =  "r"; }  //D
-    if (myGameArea.keys && myGameArea.keys[87]) {direction = "u"; }   //W
-    if (myGameArea.keys && myGameArea.keys[83]) {direction = "d"; }   //S
+	//Detect Keystrokes
+	
+	//Left Keys
+    if (myGameArea.keys && myGameArea.keys[37] || (myGameArea.keys && myGameArea.keys[65]) || (controls.turnLeft)) {
+		myGamePiece.speedX = -2;
+		direction = "l"; 
+		animateLeft();
+	}
+	
+	//Right Keys
+    if (myGameArea.keys && myGameArea.keys[39] || (myGameArea.keys && myGameArea.keys[68]) || (controls.turnRight)) {
+		myGamePiece.speedX = 2; 
+		direction =  "r"; 
+		animateRight();
+	}
+	
+	//Up Keys
+    if (myGameArea.keys && myGameArea.keys[38] || (myGameArea.keys && myGameArea.keys[87]) || (controls.moveForward)) {
+		myGamePiece.speedY = -2; 
+		direction = "u";
+		animateUp();
+	} 
+	
+	//Down Keys
+    if ((myGameArea.keys && myGameArea.keys[40]) || (myGameArea.keys && myGameArea.keys[83]) || (controls.moveBackward)) {
+		myGamePiece.speedY = 2; 
+		direction = "d";
+		animateDown();
+	}
+	
 
 	//Create swordHitbox when spacebar is pressed
 	if (controls.shooting || (myGameArea.keys && myGameArea.keys[32])) {
@@ -783,6 +800,38 @@ function enemyMovement() {
 			}
 		}
  	}
+}
+
+//AnimateDown
+function animateDown() {
+	
+	if (everyInterval(5)) {
+		spriteFrame = myGameArea.frameNo % 2;
+	}
+}
+
+function animateUp() {
+	
+	if (everyInterval(5)) {
+		spriteFrame = myGameArea.frameNo % 2;
+		spriteFrame = spriteFrame + 2;
+	}
+}
+
+function animateRight() {
+	
+	if (everyInterval(5)) {
+		spriteFrame = myGameArea.frameNo % 2;
+		spriteFrame = spriteFrame + 4;
+	}
+}
+
+function animateLeft() {
+	
+	if (everyInterval(5)) {
+		spriteFrame = myGameArea.frameNo % 2;
+		spriteFrame = spriteFrame + 6;
+	}
 }
 
 //starts the game once the page is loaded.
