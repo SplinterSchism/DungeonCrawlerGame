@@ -39,7 +39,7 @@ var direction = "u"; //FIXME make a part of the myGamePiece component?
 //StartGame: Gets called when loaded. Calls the start method of myGameArea and create components
 function startGame() {
 	
-	myGamePiece = new component(32, 32, "images/DungeonMan.png", 225, 325, "Player");
+	myGamePiece = new component(22, 32, "images/DungeonMan.png", 225, 325, "Player");
     swordHitbox = new component(0, 0, "blue", 0, 0, "Sword");
 	
 	myHud = new component(16, 2, "black", 0, 0, "HUD");
@@ -149,7 +149,7 @@ function controls() {
 function component(width, height, color, x, y, type) {
 	this.type = type;
 	
-	if(type == "Player"){
+	if(type == "Player" || type == "Sword"){
 		this.image = new Image();
 		this.image.src = color;
 	}
@@ -186,6 +186,11 @@ function component(width, height, color, x, y, type) {
 			ctx.strokeText(this.text, this.x, this.y)
 			ctx.fillText(this.text, this.x, this.y);	
 		} 
+		else if(type == "Sword"){
+			ctx.drawImage(this.image, 
+				this.x, this.y,
+				this.width, this.height);
+		}
 		else if (type == "Chest"){
 			if(currentRoom.chestState == "opened"){
 				ctx.fillStyle = "black"
@@ -243,58 +248,106 @@ function updateGameArea() {
 	myGamePiece.speedX = 0;
     myGamePiece.speedY = 0;
 
+	
+	
 	//Detect Keystrokes
 	
 	//Left Keys
-    if (myGameArea.keys && myGameArea.keys[37] || (myGameArea.keys && myGameArea.keys[65]) || (controls.turnLeft)) {
+    if ((myGameArea.keys && myGameArea.keys[37]) || (myGameArea.keys && myGameArea.keys[65]) || (controls.turnLeft)) {
 		myGamePiece.speedX = -2;
 		direction = "l"; 
-		animateLeft();
+		if (!(controls.shooting || (myGameArea.keys && myGameArea.keys[32])) 
+			&& !((myGameArea.keys && myGameArea.keys[38]) || (myGameArea.keys && myGameArea.keys[87]) || (controls.moveForward)) 
+			&& !((myGameArea.keys && myGameArea.keys[40]) || (myGameArea.keys && myGameArea.keys[83]) || (controls.moveBackward))) 
+		{
+			animateLeft();
+		}
 	}
 	
 	//Right Keys
-    if (myGameArea.keys && myGameArea.keys[39] || (myGameArea.keys && myGameArea.keys[68]) || (controls.turnRight)) {
+    if ((myGameArea.keys && myGameArea.keys[39]) || (myGameArea.keys && myGameArea.keys[68]) || (controls.turnRight)) {
 		myGamePiece.speedX = 2; 
 		direction =  "r"; 
-		animateRight();
+		if (!(controls.shooting || (myGameArea.keys && myGameArea.keys[32])) 
+			&& !((myGameArea.keys && myGameArea.keys[38]) || (myGameArea.keys && myGameArea.keys[87]) || (controls.moveForward))
+			&& !((myGameArea.keys && myGameArea.keys[40]) || (myGameArea.keys && myGameArea.keys[83]) || (controls.moveBackward))) 
+		{
+			animateRight();
+		}
 	}
 	
 	//Up Keys
-    if (myGameArea.keys && myGameArea.keys[38] || (myGameArea.keys && myGameArea.keys[87]) || (controls.moveForward)) {
+    if ((myGameArea.keys && myGameArea.keys[38]) || (myGameArea.keys && myGameArea.keys[87]) || (controls.moveForward)) {
 		myGamePiece.speedY = -2; 
 		direction = "u";
-		animateUp();
+		if (!(controls.shooting || (myGameArea.keys && myGameArea.keys[32]))) {
+			animateUp();
+		}
 	} 
 	
 	//Down Keys
     if ((myGameArea.keys && myGameArea.keys[40]) || (myGameArea.keys && myGameArea.keys[83]) || (controls.moveBackward)) {
 		myGamePiece.speedY = 2; 
 		direction = "d";
-		animateDown();
+		if (!(controls.shooting || (myGameArea.keys && myGameArea.keys[32]))) {
+			animateDown();
+		}
 	}
 	
-
-	//Create swordHitbox when spacebar is pressed
+    //Create swordHitbox when spacebar is pressed
 	if (controls.shooting || (myGameArea.keys && myGameArea.keys[32])) {
 
 		if (direction == "u") {
-			swordHitbox = new component(8, 30, "blue", (myGamePiece.x + 3), (myGamePiece.y - 28), "Sword");
+			swordHitbox = new component(4, 20, "images/SwordUp.png", (myGamePiece.x + 9), (myGamePiece.y - 20), "Sword");
+			if ((myGameArea.keys && myGameArea.keys[38]) || (myGameArea.keys && myGameArea.keys[87]) || (controls.moveForward)) {
+				animateSwordUp();
+			}
+			else {
+				spriteFrame = 10;
+			}
 		}
 		else if (direction == "d") {
-			swordHitbox = new component(8, 30, "blue", (myGamePiece.x + 19), (myGamePiece.y + 28), "Sword");
+			swordHitbox = new component(4, 20, "images/SwordDown.png", (myGamePiece.x + 9), (myGamePiece.y + 32), "Sword");
+			if ((myGameArea.keys && myGameArea.keys[40]) || (myGameArea.keys && myGameArea.keys[83]) || (controls.moveBackward)) {
+				animateSwordDown();
+			}
+			else {
+				spriteFrame = 8;
+			}
 		}
 		else if (direction == "l") {
-			swordHitbox = new component(30, 8, "blue", (myGamePiece.x - 28), (myGamePiece.y  + 19), "Sword");
+			swordHitbox = new component(20, 4, "images/SwordLeft.png", (myGamePiece.x - 20), (myGamePiece.y  + 15), "Sword");
+			if ((myGameArea.keys && myGameArea.keys[37]) || (myGameArea.keys && myGameArea.keys[65]) || (controls.turnLeft)) {
+				animateSwordLeft();
+			}
+			else {
+				spriteFrame = 14;
+			}
 		}
 		else if (direction == "r") {
-			swordHitbox = new component(30, 8, "blue", (myGamePiece.x + 28), (myGamePiece.y + 3), "Sword");
+			swordHitbox = new component(20, 4, "images/SwordRight.png", (myGamePiece.x + 22), (myGamePiece.y + 15), "Sword");
+			if ((myGameArea.keys && myGameArea.keys[39]) || (myGameArea.keys && myGameArea.keys[68]) || (controls.turnRight)) {
+				animateSwordRight();
+			}
+			else {
+				spriteFrame = 12;
+			}
 		}
-
 		swordHitbox.speedX = myGamePiece.speedX;
 		swordHitbox.speedY = myGamePiece.speedY;
 		swordHitbox.newPos();
 		swordHitbox.update();
-	}
+		
+	} else if ((direction == "u") && !((myGameArea.keys && myGameArea.keys[38]) || (myGameArea.keys && myGameArea.keys[87]) || (controls.moveForward))){
+		spriteFrame = 2;
+	} else if ((direction == "d") && !((myGameArea.keys && myGameArea.keys[40]) || (myGameArea.keys && myGameArea.keys[83]) || (controls.moveBackward))){
+		spriteFrame = 0;
+	} else if ((direction == "l") && !((myGameArea.keys && myGameArea.keys[37]) || (myGameArea.keys && myGameArea.keys[65]) || (controls.turnLeft))){
+		spriteFrame = 6;
+	} else if ((direction == "r") && !((myGameArea.keys && myGameArea.keys[39]) || (myGameArea.keys && myGameArea.keys[68]) || (controls.turnRight))){
+		spriteFrame = 4;
+	} 
+	
 
 	//Sword and enemy Collision
 	for (i = 0; i < currentRoom.numEnemies; i += 1) {
@@ -805,12 +858,20 @@ function enemyMovement() {
 //AnimateDown
 function animateDown() {
 	
+	if (spriteFrame != 0 && spriteFrame != 1) {
+		spriteFrame = 0;
+	}
+	
 	if (everyInterval(5)) {
 		spriteFrame = myGameArea.frameNo % 2;
 	}
 }
 
 function animateUp() {
+	
+	if (spriteFrame != 2 && spriteFrame != 3) {
+		spriteFrame = 2;
+	}
 	
 	if (everyInterval(5)) {
 		spriteFrame = myGameArea.frameNo % 2;
@@ -820,6 +881,10 @@ function animateUp() {
 
 function animateRight() {
 	
+	if (spriteFrame != 4 && spriteFrame != 5) {
+		spriteFrame = 4;
+	}
+	
 	if (everyInterval(5)) {
 		spriteFrame = myGameArea.frameNo % 2;
 		spriteFrame = spriteFrame + 4;
@@ -828,9 +893,61 @@ function animateRight() {
 
 function animateLeft() {
 	
+	if (spriteFrame != 6 && spriteFrame != 7) {
+		spriteFrame = 6;
+	}
+	
 	if (everyInterval(5)) {
 		spriteFrame = myGameArea.frameNo % 2;
 		spriteFrame = spriteFrame + 6;
+	}
+}
+
+function animateSwordDown() {
+	
+	if (spriteFrame != 8 && spriteFrame != 9) {
+		spriteFrame = 8;
+	}
+	
+	if (everyInterval(5)) {
+		spriteFrame = myGameArea.frameNo % 2;
+		spriteFrame = spriteFrame + 8;
+	}
+}
+
+function animateSwordUp() {
+	
+	if (spriteFrame != 10 && spriteFrame != 11) {
+		spriteFrame = 10;
+	}
+	
+	if (everyInterval(5)) {
+		spriteFrame = myGameArea.frameNo % 2;
+		spriteFrame = spriteFrame + 10;
+	}
+}
+
+function animateSwordRight() {
+	
+	if (spriteFrame != 12 && spriteFrame != 13) {
+		spriteFrame = 12;
+	}
+	
+	if (everyInterval(5)) {
+		spriteFrame = myGameArea.frameNo % 2;
+		spriteFrame = spriteFrame + 12;
+	}
+}
+
+function animateSwordLeft() {
+	
+	if (spriteFrame != 14 && spriteFrame != 15) {
+		spriteFrame = 14;
+	}
+	
+	if (everyInterval(5)) {
+		spriteFrame = myGameArea.frameNo % 2;
+		spriteFrame = spriteFrame + 14;
 	}
 }
 
