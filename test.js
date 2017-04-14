@@ -31,7 +31,7 @@ var numKeys = 0;
 //Global variables
 var roomX = 0;
 var roomY = 0;
-var level = 1;
+var level = 2;
 var currentRoom;
 var transitionDirection;
 var direction = "u"; //FIXME make a part of the myGamePiece component?

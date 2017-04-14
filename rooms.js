@@ -63,9 +63,91 @@ function rooms1() {
 
 function rooms2() {
 	room1 = {
-	"numEnemies":5, "enemyX":[1, 5, 8, 13, 13], "enemyY":[7, 4, 8, 4, 11]}
+	"numBlocks":9, "blockX":[5, 5, 5, 6, 7, 8, 9, 9, 9], "blockY":[3, 4, 5, 5, 5, 5, 5, 4, 3],
+	"numEnemies":1, "enemyX":[11], "enemyY":[7],
+	"chestX":6, "chestY":4, "chestState":"unopened", "chestContents":"key", "chestValue":1,
+	"deadEnd":["w", "s"], "numDeadEnd":2};
 	
-	myRooms = [[room1]];
-	myJsonRooms = [["room1"]];
+	room2 = {
+	"numBlocks":8, "blockX":[11, 12, 13, 14, 11, 12, 13, 14], "blockY":[5, 5, 5, 5, 9, 9, 9, 9],
+	"numEnemies":3, "enemyX":[6, 8, 8], "enemyY":[7, 9, 5],
+	"chestX":14, "chestY":3, "chestState":"unopened", "chestContents":"heart", "chestValue":1,
+	"door":["n"], "numDoors":1,
+	"deadEnd":["s"], "numDeadEnd":1};
+	
+	room3 = {
+	"numBlocks":18, "blockX":[3, 3, 3, 3, 3, 3, 3, 4, 5, 6, 7, 8, 9, 10, 11, 11, 11, 11], "blockY":[3, 4, 5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 7, 6],
+	"numEnemies":4, "enemyX":[7, 7, 7, 13], "enemyY":[4, 7, 10, 6],
+	"deadEnd":["s", "e"], "numDeadEnd":2};
+	
+	room4 = {
+	"numBlocks":13, "blockX":[5, 5, 5, 5, 6, 7, 8, 9, 9, 9, 9, 9, 9], "blockY":[11, 10, 9, 8, 8, 8, 8, 8, 7, 6, 5, 4, 3],
+	"numEnemies":2, "enemyX":[12, 7], "enemyY":[9, 5],
+	"chestX":4, "chestY":11, "chestState":"unopened", "chestContents":"money", "chestValue":50};
+	
+	room5 = {
+	"numBlocks":7, "blockX":[9, 9, 9, 9, 9, 9, 9], "blockY":[3, 6, 7, 8, 9, 10, 11],
+	"numEnemies":1, "enemyX":[12], "enemyY":[7],
+	"chestX":12, "chestY":11, "chestState":"unopened", "chestContents":"heart", "chestValue":2,
+	"deadEnd":["n", "e"], "numDeadEnd":2};
+
+	room6 = {
+	"numBlocks":16, "blockX":[5, 5, 5, 5, 5, 5, 6, 7, 8, 9, 10, 10, 10, 10, 10, 10], "blockY":[3, 4, 5, 6, 7, 8, 9, 10, 10, 9, 8, 7, 6, 5, 4, 3],
+	"chestX":7, "chestY":9, "chestState":"unopened", "chestContents":"key", "chestValue":1,
+	"deadEnd":["s", "e", "w"], "numDeadEnd":3};
+	
+	room7 = {
+	"numBlocks":12, "blockX":[1, 2, 3, 4, 5, 6, 9, 9, 9, 9, 9, 9], "blockY":[5, 5, 5, 5, 5, 5, 3, 4, 5, 9, 10, 11],
+	"numEnemies":2, "enemyX":[4, 12], "enemyY":[8, 7],
+	"deadEnd":["w"], "numDeadEnd":1};
+	
+	room8 = {
+	"numBlocks":18, "blockX":[5, 5, 4, 3, 3, 3, 4, 5, 6, 10, 10, 11, 12, 12, 12, 11, 10, 9], "blockY":[11, 10, 9, 8, 7, 6, 5, 4, 3, 11, 10, 9, 8, 7, 6, 5, 4, 3],
+	"numEnemies":4, "enemyX":[6, 6, 9, 9], "enemyY":[6, 8, 6, 8],
+	"chestX":11, "chestY":7, "chestState":"unopened", "chestContents":"money", "chestValue":100,
+	"door":["n"], "numDoors":1,
+	"deadEnd":["w", "e"], "numDeadEnd":2};
+	
+	room9 = {
+	"numBlocks":28, "blockX":[1, 2, 3, 4, 5, 5, 5, 1, 2, 3, 4, 5, 5, 5, 10, 10, 10, 11, 12, 13, 14, 10, 10, 10, 11, 12, 13, 14], "blockY":[9, 9, 9, 9, 9, 10, 11, 5, 5, 5, 5, 5, 4, 3, 11, 10, 9, 9, 9, 9, 9, 3, 4, 5, 5, 5, 5, 5],
+	"deadEnd":["w", "s"], "numDeadEnd":2};
+	
+	room10 = {
+	"numBlocks":9, "blockX":[9, 10, 11, 12, 13, 12, 11, 10, 9], "blockY":[11, 10, 9, 8, 7, 6, 5, 4, 3],
+	"numEnemies":5, "enemyX":[6, 6, 6, 9, 9], "enemyY":[9, 7, 5, 9, 5],
+	"chestX":12, "chestY":7, "chestState":"unopened", "chestContents":"key", "chestValue":1,
+	"deadEnd":["e", "s", "n"], "numDeadEnd":3};
+	
+	room11 = {
+	"numBlocks":20, "blockX":[4, 4, 4, 4, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 11, 11, 11, 11], "blockY":[11, 10, 8, 9, 8, 7, 6, 5, 4, 3, 8, 7, 6, 5, 4, 3, 11, 10, 9, 8],
+	"numEnemies":2, "enemyX":[3, 12], "enemyY":[5, 5],
+	"chestX":13, "chestY":11, "chestState":"unopened", "chestContents":"heart", "chestValue":2,
+	"deadEnd":["e", "n"], "numDeadEnd":2};
+	
+	room12 = {
+	"numBlocks":14, "blockX":[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "blockY":[11, 10, 9, 8, 7, 6, 6, 6, 6, 7, 8, 9, 10, 11],
+	"numEnemies":2, "enemyX":[2, 12], "enemyY":[5, 5],
+	"deadEnd":["n"], "numDeadEnd":1,
+	"numGoals":1, "goalX":[7], "goalY":[7]};
+	
+	room13 = {
+	"numBlocks":12, "blockX":[4, 4, 4, 4, 5, 6, 7, 8, 9, 9, 9, 9], "blockY":[5, 6, 7, 8, 8, 8, 8, 8, 8, 9, 10, 11],
+	"numEnemies":3, "enemyX":[12, 6, 5], "enemyY":[9, 4, 10],
+	"chestX":8, "chestY":9, "chestState":"unopened", "chestContents":"heart", "chestValue":2,
+	"deadEnd":["n", "w"], "numDeadEnd":2};
+	
+	room14 = {
+	"numEnemies":10, "enemyX":[2, 2, 4, 6, 6, 9, 9, 11, 13, 13], "enemyY":[5, 9, 7, 5, 9, 9, 5, 7, 9, 5],
+	"chestX":1, "chestY":11, "chestState":"unopened", "chestContents":"money", "chestValue":50,
+	"deadEnd":["e", "w"], "numDeadEnd":2};
+	
+	room15 = {
+	"numBlocks":23, "blockX":[6, 6, 6, 6, 6, 6, 6, 6, 6, 10, 10, 10, 11, 12, 13, 14, 10, 10, 10, 11, 12, 13, 14], "blockY":[3, 4, 5, 6, 7, 8, 9, 10, 11, 11, 10, 9, 9, 9, 9, 9, 3, 4, 5, 5, 5, 5, 5],
+	"door":["e"], "numDoors":1,
+	"deadEnd":["w"], "numDeadEnd":1};
+
+	
+	myRooms = [[room1, room15, room14, room13], [room2, room7, room8, room12], [room3, room4, room9, room11], [room6, room5, room10]];
+	myJsonRooms = [["room1", "room15", "room14", "room13"], ["room2", "room7", "room8", "room12"], ["room3", "room4", "room9", "room11"], ["room6", "room5", "room10"]];
 
 }
