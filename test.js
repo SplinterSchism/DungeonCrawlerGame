@@ -1,6 +1,7 @@
 //Dungeon Master Prototype 1: Keyboard Controls
 
 //Variables for components
+var myBackground;
 var myGamePiece;
 var swordHitbox;
 
@@ -39,6 +40,7 @@ var direction = "u"; //FIXME make a part of the myGamePiece component?
 //StartGame: Gets called when loaded. Calls the start method of myGameArea and create components
 function startGame() {
 	
+	myBackground = new component(480, 330, "images/Background.png", 0, 60, "Background");
 	myGamePiece = new component(22, 32, "images/DungeonMan.png", 225, 325, "Player");
     swordHitbox = new component(0, 0, "blue", 0, 0, "Sword");
 	
@@ -149,12 +151,12 @@ function controls() {
 function component(width, height, color, x, y, type) {
 	this.type = type;
 	
-	if(type == "Player" || type == "Sword"){
+	if(type == "Player" || type == "Sword" || type == "Background" || type == "Block"){
 		this.image = new Image();
 		this.image.src = color;
 	}
 	
-	if(type == "Player" || type == "Sword" || type == "text") {
+	if(type == "Player" || type == "Sword" || type == "text" || type == "Background") {
 		this.width = width;
 		this.height = height;
 		this.x = x;
@@ -173,7 +175,12 @@ function component(width, height, color, x, y, type) {
     this.update = function(){
 		ctx = myGameArea.context;
 		
-		if(type == "Player"){
+		if(type == "Background"){
+			ctx.drawImage(this.image, 
+				this.x, this.y, 
+				this.width, this.height);
+		}
+		else if(type == "Player"){
 			ctx.drawImage(this.image, 
 				(spriteFrame * this.width), 0,
 				this.width, this.height,
@@ -186,7 +193,7 @@ function component(width, height, color, x, y, type) {
 			ctx.strokeText(this.text, this.x, this.y)
 			ctx.fillText(this.text, this.x, this.y);	
 		} 
-		else if(type == "Sword"){
+		else if(type == "Sword" || type == "Block"){
 			ctx.drawImage(this.image, 
 				this.x, this.y,
 				this.width, this.height);
@@ -248,8 +255,6 @@ function updateGameArea() {
 	myGamePiece.speedX = 0;
     myGamePiece.speedY = 0;
 
-	
-	
 	//Detect Keystrokes
 	
 	//Left Keys
@@ -293,6 +298,9 @@ function updateGameArea() {
 			animateDown();
 		}
 	}
+	
+	//Update Background Image
+	myBackground.update();
 	
     //Create swordHitbox when spacebar is pressed
 	if (controls.shooting || (myGameArea.keys && myGameArea.keys[32])) {
@@ -519,10 +527,6 @@ function updateGameArea() {
 	myKeys.text = numKeys;
 	myKeys.update();
 
-	for (i = 0; i < myWalls.length; i += 1) {
-		myWalls[i].update();
-	}
-
 	for (i = 0; i < myBlocks.length; i += 1) {
 		myBlocks[i].update();
 	}
@@ -728,7 +732,7 @@ function changeRoom(direction) {
 
 function createObjects() {
 	for (i = 0; i < currentRoom.numBlocks; i += 1) {
-		myBlocks.push(new component(1, 1, "green", currentRoom.blockX[i], currentRoom.blockY[i]));
+		myBlocks.push(new component(1, 1, "images/Block.png", currentRoom.blockX[i], currentRoom.blockY[i], "Block"));
 	}
 
 	for (i = 0; i < currentRoom.numEnemies; i += 1) {
