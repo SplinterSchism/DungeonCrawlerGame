@@ -803,10 +803,6 @@ function createObjects() {
 		myBoss.push(new component(3, 3, "Red", currentRoom.bossX[i], currentRoom.bossY[i]));
 	}
 	
-	for (i = 0; i < currentRoom.numBoss; i += 1) {
-		myBoss.push(new component(3, 3, "Red", currentRoom.bossX[i], currentRoom.bossY[i]));
-	}
-	
 	for (i = 0; i < currentRoom.numDeadEnd; i += 1) {
 		if (currentRoom.deadEnd[i] == "n"){
 			myDeadEnds.push(new component(2, 1, "images/DeadEndNorth.png", 7, 2, "DeadEnd"));
