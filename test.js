@@ -11,6 +11,8 @@ var myWalls = [];
 
 var myBlocks = [];
 var myEnemies = [];
+var myBoss = [];
+var bossDmg = 0;
 
 var myDeadEnds = [];
 var myDoors = [];
@@ -32,7 +34,7 @@ var numKeys = 0;
 //Global variables
 var roomX = 0;
 var roomY = 0;
-var level = 2;
+var level = 3;
 var currentRoom;
 var transitionDirection;
 var direction = "u"; //FIXME make a part of the myGamePiece component?
@@ -466,6 +468,7 @@ function updateGameArea() {
 	//make enemies move
 	enemyMovement();
 	
+	
 	//Enemy Collision with Walls
 	for (i = 0; i < myEnemies.length; i += 1) {
 		for (j = 0; j < myWalls.length; j += 1) {
@@ -497,6 +500,48 @@ function updateGameArea() {
 	for (i = 0; i < myEnemies.length; i += 1) {
 		if (myEnemies[i].crashWith(myChest)) {
 			solidCollision(myChest, myEnemies[i]);
+		}
+	}
+	
+	//Make boss move
+	bossMovement();
+	
+	//Boss Collision with Walls
+	for (i = 0; i < myBoss.length; i += 1) {
+		for (j = 0; j < myWalls.length; j += 1) {
+			if (myBoss[i].crashWith(myWalls[j])) {
+				solidCollision(myWalls[j], myBoss[i]);
+			}
+		}
+	}
+	
+	//Boss Collision with deadEnds
+	for (i = 0; i < myBoss.length; i += 1) {
+		for (j = 0; j < myDeadEnds.length; j += 1) {
+			if (myBoss[i].crashWith(myDeadEnds[j])) {
+				solidCollision(myDeadEnds[j], myBoss[i]);
+			}
+		}
+	}
+
+	//Collision with Boss
+	for (i = 0; i < myBoss.length; i += 1) {
+		if (myGamePiece.crashWith(myBoss[i])) {
+			damageCollision(myBoss[i], myGamePiece);
+			enemyCollision(myGamePiece, myBoss[i]);
+			numHearts = numHearts - 1;
+		}
+	}
+	
+	//Sword and boss Collision
+	for (i = 0; i < currentRoom.numBoss; i += 1) {
+		if(swordHitbox.crashWith(myBoss[i])){
+			bossDmg = bossDmg + 1;
+			console.log(bossDmg);
+			if(bossDmg == 1000) {
+				myBoss.splice(i,1);
+				currentRoom.numBoss = currentRoom.numBoss - 1;
+			}
 		}
 	}
 	
@@ -544,6 +589,10 @@ function updateGameArea() {
 	}
 	for (i = 0; i < myGoals.length; i += 1) {
 		myGoals[i].update();
+	}
+	for (i = 0; i < myBoss.length; i += 1) {
+		myBoss[i].newPos();
+		myBoss[i].update();
 	}
 	
 	myChest.update();	
@@ -743,6 +792,10 @@ function createObjects() {
 		myGoals.push(new component(1, 1, "pink", currentRoom.goalX[i], currentRoom.goalY[i]));
 	}
 	
+	for (i = 0; i < currentRoom.numBoss; i += 1) {
+		myBoss.push(new component(3, 3, "Red", currentRoom.bossX[i], currentRoom.bossY[i]));
+	}
+	
 	for (i = 0; i < currentRoom.numDeadEnd; i += 1) {
 		if (currentRoom.deadEnd[i] == "n"){
 			myDeadEnds.push(new component(2, 1, "green", 7, 2));
@@ -792,6 +845,9 @@ function deleteObjects() {
 	for (i = 0; i < currentRoom.numGoals; i += 1) {
 		myGoals.pop();
 	}
+	for (i = 0; i < currentRoom.numBoss; i += 1) {
+		myBoss.pop();
+	}
 
 	myChest = null;
 }
@@ -823,6 +879,10 @@ function loadRoom() {
 		myRooms = [];
 		myJsonRooms = [];
 		rooms2();
+	} else if (level == 3){
+		myRooms = [];
+		myJsonRooms = [];
+		rooms3();
 	}
 	
 	if(localStorage.getItem(myJsonRooms[roomX][roomY]) === null) {
@@ -854,6 +914,31 @@ function enemyMovement() {
 			if (rndDirection == 4) {
 				myEnemies[i].speedY = 0;
 				myEnemies[i].speedX = -1;
+			}
+		}
+ 	}
+}
+
+//Boss Movement
+function bossMovement() {
+	for (i = 0; i < myBoss.length; i += 1) {
+		rndDirection = Math.floor(Math.random() * 4) + 1;
+		if(everyInterval(30)){
+			if (rndDirection == 1) {
+				myBoss[i].speedX = -1;
+				myBoss[i].speedY = 1;
+			}
+			if (rndDirection == 2) {
+				myBoss[i].speedX = 1;
+				myBoss[i].speedY = -1;
+			}
+			if (rndDirection == 3) {
+				myBoss[i].speedY = 1;
+				myBoss[i].speedX = 1;
+			}
+			if (rndDirection == 4) {
+				myBoss[i].speedY = -1;
+				myBoss[i].speedX = -1;
 			}
 		}
  	}

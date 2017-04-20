@@ -151,3 +151,13 @@ function rooms2() {
 	myJsonRooms = [["room1", "room15", "room14", "room13"], ["room2", "room7", "room8", "room12"], ["room3", "room4", "room9", "room11"], ["room6", "room5", "room10"]];
 
 }
+
+function rooms3() {
+	room1 = { 
+	"numBoss":1, "bossX":[5], "bossY":[6],
+	"door":["n"], "numDoors":1,
+	"deadEnd":["s","w", "e"], "numDeadEnd":3};
+	
+	myRooms = [[room1]];
+	myJsonRooms = [["room1"]];
+}
