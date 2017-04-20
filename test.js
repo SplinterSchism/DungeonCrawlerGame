@@ -471,6 +471,7 @@ function updateGameArea() {
 	//make enemies move
 	enemyMovement();
 	
+	
 	//Enemy Collision with Walls
 	for (i = 0; i < myEnemies.length; i += 1) {
 		for (j = 0; j < myWalls.length; j += 1) {
@@ -802,6 +803,10 @@ function createObjects() {
 		myBoss.push(new component(3, 3, "Red", currentRoom.bossX[i], currentRoom.bossY[i]));
 	}
 	
+	for (i = 0; i < currentRoom.numBoss; i += 1) {
+		myBoss.push(new component(3, 3, "Red", currentRoom.bossX[i], currentRoom.bossY[i]));
+	}
+	
 	for (i = 0; i < currentRoom.numDeadEnd; i += 1) {
 		if (currentRoom.deadEnd[i] == "n"){
 			myDeadEnds.push(new component(2, 1, "images/DeadEndNorth.png", 7, 2, "DeadEnd"));
@@ -921,6 +926,31 @@ function enemyMovement() {
 			if (rndDirection == 4) {
 				myEnemies[i].speedY = 0;
 				myEnemies[i].speedX = -1* enemySpeed;
+			}
+		}
+ 	}
+}
+
+//Boss Movement
+function bossMovement() {
+	for (i = 0; i < myBoss.length; i += 1) {
+		rndDirection = Math.floor(Math.random() * 4) + 1;
+		if(everyInterval(30)){
+			if (rndDirection == 1) {
+				myBoss[i].speedX = -1;
+				myBoss[i].speedY = 1;
+			}
+			if (rndDirection == 2) {
+				myBoss[i].speedX = 1;
+				myBoss[i].speedY = -1;
+			}
+			if (rndDirection == 3) {
+				myBoss[i].speedY = 1;
+				myBoss[i].speedX = 1;
+			}
+			if (rndDirection == 4) {
+				myBoss[i].speedY = -1;
+				myBoss[i].speedX = -1;
 			}
 		}
  	}

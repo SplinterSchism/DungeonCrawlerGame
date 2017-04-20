@@ -153,11 +153,13 @@ function rooms2() {
 }
 
 function rooms3() {
+
 	room1 = {
 	"numBoss":1, "bossX":[5], "bossY":[6],
 	"door":["n"], "numDoors":1,
 	"deadEnd":["s","w", "e"], "numDeadEnd":3};
 	
+
 	room2 = {"numGoals":1, "goalX":[7], "goalY":[7]};
 	
 	myRooms = [[room1, room2]];
