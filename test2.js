@@ -1,6 +1,4 @@
 //Dungeon Master Prototype 1: Keyboard Controls
-window.localStorage.clear();
-
 
 //Variables for components
 var myBackground;
@@ -39,8 +37,7 @@ var roomY = 0;
 var level = 3;
 var currentRoom;
 var transitionDirection;
-var direction = "u";
-var enemySpeed = 1;
+var direction = "u"; //FIXME make a part of the myGamePiece component?
 
 //StartGame: Gets called when loaded. Calls the start method of myGameArea and create components
 function startGame() {
@@ -123,7 +120,7 @@ var myGameArea = {
 		numKeys = 0;
 		roomX = 0;
 		roomY = 0;
-		bossDmg = 0;
+		GoalsFlag = 0;
 		window.localStorage.clear();
 		deleteObjects();
 		startGame();
@@ -132,15 +129,11 @@ var myGameArea = {
 	next : function() {
 		myGameArea.clear();
 		level = level + 1;
-		if (level == 4) {
-			enemySpeed = enemySpeed + .5;
-			level = 1;
-		}
 		clearInterval(this.interval);
 		numKeys = 0;
 		roomX = 0;
 		roomY = 0;
-		bossDmg = 0;
+		Flag = false;
 		window.localStorage.clear()
 		deleteObjects();
 		startGame();
@@ -156,12 +149,15 @@ function controls() {
     this.shooting = false;
 }
 
-///////////////////////////////////////////
-//Class that creates a component object.///
+//Class that creates a component object.
 function component(width, height, color, x, y, type) {
 	this.type = type;
-	this.image = new Image();
-	this.image.src = color;
+	
+	if(type == "Player" || type == "Sword" || type == "Background" || type == "Block"){
+		this.image = new Image();
+		this.image.src = color;
+	}
+	
 	if(type == "Player" || type == "Sword" || type == "text" || type == "Background") {
 		this.width = width;
 		this.height = height;
@@ -199,18 +195,20 @@ function component(width, height, color, x, y, type) {
 			ctx.strokeText(this.text, this.x, this.y)
 			ctx.fillText(this.text, this.x, this.y);	
 		} 
-		else if(type == "Sword" || type == "Block" || type == "DeadEnd" || type == "Door"){
+		else if(type == "Sword" || type == "Block"){
 			ctx.drawImage(this.image, 
 				this.x, this.y,
 				this.width, this.height);
 		}
 		else if (type == "Chest"){
 			if(currentRoom.chestState == "opened"){
-				this.image.src = "images/opened.png"
+				ctx.fillStyle = "black"
+				ctx.fillRect(this.x, this.y, this.width, this.height);
 			}
-			ctx.drawImage(this.image, 
-				this.x, this.y,
-				this.width, this.height);
+			else {
+				ctx.fillStyle = color;
+				ctx.fillRect(this.x, this.y, this.width, this.height);
+			}
 		}
 		else {
 			ctx.fillStyle = color;
@@ -244,8 +242,7 @@ function component(width, height, color, x, y, type) {
 
 }
 
-/////////////////////////////////////////////////////////////
-//updateGameArea: Clears screen then updates every frame.////
+//updateGameArea: Clears screen then updates every frame.
 function updateGameArea() {
 	//Condition to end game
 	if (numHearts < 1) myGameArea.stop();
@@ -471,6 +468,7 @@ function updateGameArea() {
 	//make enemies move
 	enemyMovement();
 	
+	
 	//Enemy Collision with Walls
 	for (i = 0; i < myEnemies.length; i += 1) {
 		for (j = 0; j < myWalls.length; j += 1) {
@@ -540,10 +538,9 @@ function updateGameArea() {
 		if(swordHitbox.crashWith(myBoss[i])){
 			bossDmg = bossDmg + 1;
 			console.log(bossDmg);
-			if(bossDmg >= 100 * enemySpeed) {
+			if(bossDmg == 1000) {
 				myBoss.splice(i,1);
 				currentRoom.numBoss = currentRoom.numBoss - 1;
-				numKeys = numKeys + 1; 
 			}
 		}
 	}
@@ -601,10 +598,6 @@ function updateGameArea() {
 	myChest.update();	
 
 }
-
-/////////////////////////////////////////
-//END of updateGameArea//////////////////
-
 
 //everyInterval: Returns true if the frameNo is a multiple of the parameter.
 function everyInterval(n) {
@@ -792,47 +785,48 @@ function createObjects() {
 	}
 
 	for (i = 0; i < currentRoom.numEnemies; i += 1) {
-		myEnemies.push(new component(1, 1, "orange", currentRoom.enemyX[i], currentRoom.enemyY[i], "Enemy"));
+		myEnemies.push(new component(1, 1, "orange", currentRoom.enemyX[i], currentRoom.enemyY[i]));
 	}
 	
 	for (i = 0; i < currentRoom.numGoals; i += 1) {
-		myGoals.push(new component(1, 1, "pink", currentRoom.goalX[i], currentRoom.goalY[i], "Goal"));
+		myGoals.push(new component(1, 1, "pink", currentRoom.goalX[i], currentRoom.goalY[i]));
 	}
+	
 	for (i = 0; i < currentRoom.numBoss; i += 1) {
 		myBoss.push(new component(3, 3, "Red", currentRoom.bossX[i], currentRoom.bossY[i]));
 	}
 	
 	for (i = 0; i < currentRoom.numDeadEnd; i += 1) {
 		if (currentRoom.deadEnd[i] == "n"){
-			myDeadEnds.push(new component(2, 1, "images/DeadEndNorth.png", 7, 2, "DeadEnd"));
+			myDeadEnds.push(new component(2, 1, "green", 7, 2));
 		}
 		if (currentRoom.deadEnd[i] == "e"){
-			myDeadEnds.push(new component(1, 2, "images/DeadEndEast.png", 15, 6.5, "DeadEnd"));
+			myDeadEnds.push(new component(1, 2, "green", 15, 6.5));
 		}
 		if (currentRoom.deadEnd[i] == "s"){
-			myDeadEnds.push(new component(2, 1, "images/DeadEndSouth.png", 7, 12, "DeadEnd"));
+			myDeadEnds.push(new component(2, 1, "green", 7, 12));
 		}
 		if (currentRoom.deadEnd[i] == "w"){
-			myDeadEnds.push(new component(1, 2, "images/DeadEndWest.png", 0, 6.5, "DeadEnd"));
+			myDeadEnds.push(new component(1, 2, "green", 0, 6.5));
 		}
 	}
 	
 	for (i = 0; i < currentRoom.numDoors; i += 1) {
 		if (currentRoom.door[i] == "n"){
-			myDoors.push(new component(2, 1, "images/DoorNorth.png", 7, 2, "Door"));
+			myDoors.push(new component(2, 1, "blue", 7, 2));
 		}
 		if (currentRoom.door[i] == "e"){
-			myDoors.push(new component(1, 2, "images/DoorEast.png", 15, 6.5, "Door"));
+			myDoors.push(new component(1, 2, "blue", 15, 6.5));
 		}
 		if (currentRoom.door[i] == "s"){
-			myDoors.push(new component(2, 1, "images/DoorSouth.png", 7, 12, "Door"));
+			myDoors.push(new component(2, 1, "blue", 7, 12));
 		}
 		if (currentRoom.door[i] == "w"){
-			myDoors.push(new component(1, 2, "images/DoorWest.png", 0, 6.5, "Door"));
+			myDoors.push(new component(1, 2, "blue", 0, 6.5));
 		}
 	}
     
-	myChest = new component(1, 1, "images/Chest.png", currentRoom.chestX, currentRoom.chestY, "Chest");
+	myChest = new component(1, 1, "purple", currentRoom.chestX, currentRoom.chestY, "Chest");
 }
 
 function deleteObjects() {
@@ -900,27 +894,26 @@ function loadRoom() {
 	}
 }
 
-
 //Enemy Movement
 function enemyMovement() {
 	for (i = 0; i < myEnemies.length; i += 1) {
 		rndDirection = Math.floor(Math.random() * 4) + 1;
-		if(everyInterval(30 * (1/enemySpeed))){
+		if(everyInterval(30)){
 			if (rndDirection == 1) {
 				myEnemies[i].speedX = 0;
-				myEnemies[i].speedY = 1  * enemySpeed;
+				myEnemies[i].speedY = 1;
 			}
 			if (rndDirection == 2) {
 				myEnemies[i].speedX = 0;
-				myEnemies[i].speedY = -1* enemySpeed;
+				myEnemies[i].speedY = -1;
 			}
 			if (rndDirection == 3) {
 				myEnemies[i].speedY = 0;
-				myEnemies[i].speedX = 1* enemySpeed;
+				myEnemies[i].speedX = 1;
 			}
 			if (rndDirection == 4) {
 				myEnemies[i].speedY = 0;
-				myEnemies[i].speedX = -1* enemySpeed;
+				myEnemies[i].speedX = -1;
 			}
 		}
  	}
