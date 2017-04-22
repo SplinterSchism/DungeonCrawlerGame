@@ -206,7 +206,7 @@ function component(width, height, color, x, y, type) {
 		}
 		else if (type == "Chest"){
 			if(currentRoom.chestState == "opened"){
-				this.image.src = "images/opened.png"
+				this.image.src = "images/Opened.png"
 			}
 			ctx.drawImage(this.image, 
 				this.x, this.y,
@@ -242,6 +242,23 @@ function component(width, height, color, x, y, type) {
 			return crash;
 	}
 
+}
+
+//Class for sound object
+function sound(src) {
+    this.sound = document.createElement("audio");
+    this.sound.src = src;
+    this.sound.setAttribute("preload", "auto");
+    this.sound.setAttribute("controls", "none");
+	this.loop = false;
+    this.sound.style.display = "none";
+    document.body.appendChild(this.sound);
+    this.play = function(){
+        this.sound.play();
+    }
+    this.stop = function(){
+        this.sound.pause();
+    }
 }
 
 /////////////////////////////////////////////////////////////
