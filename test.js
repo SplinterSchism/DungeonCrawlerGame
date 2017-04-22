@@ -33,10 +33,21 @@ var numMoney = 0;
 var myKeys;
 var numKeys = 0;
 
+//Sound Variables
+var swordHitWall;
+var enemyHitPlayer;
+var playerHitEnemy;
+var swordHitChest;
+var openDoor;
+var heartPickup;
+var keyPickup;
+var moneyPickup;
+var nextLevelTeleport;
+
 //Global variables
 var roomX = 0;
 var roomY = 0;
-var level = 3;
+var level = 1;
 var currentRoom;
 var transitionDirection;
 var direction = "u";
@@ -62,6 +73,19 @@ function startGame() {
 	myWalls.push(new component(1, 3.5, "green", 0, 8.5));
 	myWalls.push(new component(1, 3.5, "green", 15, 3));
 	myWalls.push(new component(1, 3.5, "green", 15, 8.5));
+	
+	//Sounds
+	swordHitWall = new sound("sounds/SwordHitWall.mp3");
+	enemyHitPlayer = new sound("sounds/EnemyHitPlayer.mp3");
+	enemyHitPlayer.sound.volume = 0.5;
+	playerHitEnemy = new sound("sounds/PlayerHitEnemy.mp3");
+	playerHitEnemy.sound.volume = 0.5;
+	swordHitChest = new sound("sounds/SwordHitChest.mp3");
+	openDoor = new sound("sounds/OpenDoor.mp3");
+	heartPickup = new sound("sounds/heartPickup.mp3");
+	keyPickup = new sound("sounds/keyPickup.mp3");
+	moneyPickup = new sound("sounds/moneyPickup.mp3");
+	nextLevelTeleport = new sound("sounds/nextLevelTeleport.mp3");
 
 	loadRoom();
 	createObjects();
@@ -384,7 +408,7 @@ function updateGameArea() {
 		if(swordHitbox.crashWith(myEnemies[i])){
 			myEnemies.splice(i,1);
 			currentRoom.numEnemies = currentRoom.numEnemies - 1;
-
+			playerHitEnemy.play();
 		}
 	}
 	
@@ -392,15 +416,13 @@ function updateGameArea() {
 	for (i = 0; i < myWalls.length; i += 1) {
 		if(swordHitbox.crashWith(myWalls[i])){
 			swordCollision(myWalls[i]);
-
 		}
 	}
 	
-		//Sword and block Collision
+	//Sword and block Collision
 	for (i = 0; i < myBlocks.length; i += 1) {
 		if(swordHitbox.crashWith(myBlocks[i])){
 			swordCollision(myBlocks[i]);
-
 		}
 	}
 	
@@ -412,22 +434,26 @@ function updateGameArea() {
 				currentRoom.numDoors = currentRoom.numDoors - 1;
 				numKeys = numKeys - 1;
 			}
+			openDoor.play();
 		}
 	}
 	
 	//sword and chest collision
 	if(currentRoom.chestState == "unopened"){
 		if(swordHitbox.crashWith(myChest)){
+			swordHitChest.play();
 			if (currentRoom.chestContents == "heart"){
 				numHearts = numHearts + currentRoom.chestValue;
+				heartPickup.play();
 			}
 			if (currentRoom.chestContents == "money"){
 				numMoney = numMoney + currentRoom.chestValue;
+				moneyPickup.play();
 			}
 			if (currentRoom.chestContents == "key"){
 				numKeys = numKeys + currentRoom.chestValue;
+				keyPickup.play();
 			}
-			
 			currentRoom.chestState = "opened"
 		}
 	}
@@ -472,6 +498,7 @@ function updateGameArea() {
 		if (myGamePiece.crashWith(myGoals[i])) {
 				solidCollision(myGoals[i], myGamePiece);
 				myGameArea.next();
+				nextLevelTeleport.play();
 			}
 	}
 
@@ -482,6 +509,7 @@ function updateGameArea() {
 			damageCollision(myEnemies[i], myGamePiece);
 			enemyCollision(myGamePiece, myEnemies[i]);
 			numHearts = numHearts - 1;
+			enemyHitPlayer.play();
 		}
 	}
 	
@@ -792,6 +820,7 @@ function swordCollision(myObj) {
 			}
 		}
 	}
+	swordHitWall.play();
 }
 
 function changeRoom(direction) {
