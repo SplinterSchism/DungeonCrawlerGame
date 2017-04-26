@@ -4,6 +4,7 @@ window.localStorage.clear();
 
 //Variables for components
 var myBackground;
+var myBlackScreen;
 var myGamePiece;
 var swordHitbox;
 
@@ -59,8 +60,9 @@ var enemySpeed = 1;
 function startGame() {
 	
 	myBackground = new component(480, 330, "images/Background.png", 0, 60, "Background");
+	myBlackScreen = new component(480, 330, "images/BlackScreen.png", 0 , 60, "BlackScreen");
 	myGamePiece = new component(22, 32, "images/DungeonMan.png", 225, 325, "Player");
-    swordHitbox = new component(0, 0, "blue", 0, 0, "Sword");
+    swordHitbox = new component(0, 0, "blue", -5, -5, "Sword");
 	
 	myHud = new component(16, 2, "black", 0, 0, "HUD");
 	myHearts = new component("30px", "Consolas", "red", 40, 40, "text");
@@ -204,7 +206,7 @@ function component(width, height, color, x, y, type) {
 	this.type = type;
 	this.image = new Image();
 	this.image.src = color;
-	if(type == "Player" || type == "Sword" || type == "text" || type == "Background") {
+	if(type == "Player" || type == "Sword" || type == "text" || type == "Background" || type == "BlackScreen") {
 		this.width = width;
 		this.height = height;
 		this.x = x;
@@ -253,7 +255,7 @@ function component(width, height, color, x, y, type) {
 			ctx.strokeText(this.text, this.x, this.y)
 			ctx.fillText(this.text, this.x, this.y);	
 		} 
-		else if(type == "Sword" || type == "Block" || type == "DeadEnd" || type == "Door"){
+		else if(type == "Sword" || type == "Block" || type == "DeadEnd" || type == "Door" || type == "BlackScreen" ){
 			ctx.drawImage(this.image, 
 				this.x, this.y,
 				this.width, this.height);
@@ -694,11 +696,14 @@ function everyInterval(n) {
 }
 
 function updateTransition() {
+	
+	myGameArea.clear();
+	myBlackScreen.update();
+	
 	if (transitionDirection == "North") {
 		if(myGamePiece.y < 370) {
 			myGamePiece.speedY = 6;
 			myGamePiece.speedX = 0;
-			myGameArea.clear();
 			myGamePiece.newPos();
 			myGamePiece.update();
 		}
@@ -711,7 +716,6 @@ function updateTransition() {
 		if(myGamePiece.y > 50) {
 			myGamePiece.speedY = -6;
 			myGamePiece.speedX = 0;
-			myGameArea.clear();
 			myGamePiece.newPos();
 			myGamePiece.update();
 		}
@@ -724,7 +728,6 @@ function updateTransition() {
 		if(myGamePiece.x < 460) {
 			myGamePiece.speedX = 6;
 			myGamePiece.speedY = 0;
-			myGameArea.clear();
 			myGamePiece.newPos();
 			myGamePiece.update();
 		}
@@ -737,7 +740,6 @@ function updateTransition() {
 		if(myGamePiece.x > -10) {
 			myGamePiece.speedX = -6;
 			myGamePiece.speedY = 0;
-			myGameArea.clear();
 			myGamePiece.newPos();
 			myGamePiece.update();
 		}
@@ -746,6 +748,7 @@ function updateTransition() {
 			myGameArea.update();
 		}
 	}
+	
 }
 
 //solidCollision: sets up collision properties for solid objects
@@ -1032,32 +1035,6 @@ function bossMovement() {
 		}
  	}
 }
-
-//Boss Movement
-function bossMovement() {
-	for (i = 0; i < myBoss.length; i += 1) {
-		rndDirection = Math.floor(Math.random() * 4) + 1;
-		if(everyInterval(30)){
-			if (rndDirection == 1) {
-				myBoss[i].speedX = -1;
-				myBoss[i].speedY = 1;
-			}
-			if (rndDirection == 2) {
-				myBoss[i].speedX = 1;
-				myBoss[i].speedY = -1;
-			}
-			if (rndDirection == 3) {
-				myBoss[i].speedY = 1;
-				myBoss[i].speedX = 1;
-			}
-			if (rndDirection == 4) {
-				myBoss[i].speedY = -1;
-				myBoss[i].speedX = -1;
-			}
-		}
- 	}
-}
-
 
 function animateDown() {
 	
