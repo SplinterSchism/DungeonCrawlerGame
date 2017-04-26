@@ -34,6 +34,7 @@ var myKeys;
 var numKeys = 0;
 
 //Sound Variables
+var levelMusic;
 var swordHitWall;
 var enemyHitPlayer;
 var playerHitEnemy;
@@ -86,7 +87,18 @@ function startGame() {
 	keyPickup = new sound("sounds/keyPickup.mp3");
 	moneyPickup = new sound("sounds/moneyPickup.mp3");
 	nextLevelTeleport = new sound("sounds/nextLevelTeleport.mp3");
-
+	levelMusic = new sound("music/TavernJig.wav");
+	if (level == 2) {
+		levelMusic = new sound("music/Outcast.mp3");
+	}
+	if (level == 3) {
+		levelMusic = new sound("music/Entombed.mp3");
+	}
+	levelMusic.sound.volume = 0.05;
+	levelMusic.sound.loop = true;
+	
+	
+	levelMusic.play();
 	loadRoom();
 	createObjects();
 	controls();
@@ -150,6 +162,8 @@ var myGameArea = {
 		bossDmg = 0;
 		window.localStorage.clear();
 		deleteObjects();
+		//Stop Music
+		levelMusic.stop();
 		startGame();
 	},
 	
@@ -290,9 +304,11 @@ function sound(src) {
 function updateGameArea() {
 	//Condition to end game
 	if (numHearts < 1) myGameArea.stop();
+
     
 	//Clear screen
     myGameArea.clear();
+	
 	
 	//Count frames
 	myGameArea.frameNo += 1;

@@ -153,15 +153,57 @@ function rooms2() {
 }
 
 function rooms3() {
-
+	
 	room1 = {
-	"numBoss":1, "bossX":[5], "bossY":[6],
+	"numBlocks":12, "blockX":[5, 5, 5, 5, 10, 10, 10, 10, 11, 12, 13, 14], "blockY":[11, 10, 9, 8, 11, 10, 9, 8, 8, 7, 6, 5],
+	"numEnemies":3, "enemyX":[3, 8, 12], "enemyY":[5, 5, 5],
+	"chestX":11, "chestY":10, "chestState":"unopened", "chestContents":"money", "chestValue":100,
+	"deadEnd":["s", "w"], "numDeadEnd":3};
+	
+	room2 = {
+	"numBlocks":10, "blockX":[1, 2, 3, 4, 1, 2, 3, 4, 6, 9], "blockY":[9, 9, 9, 9, 5, 5, 5, 5, 3, 3],
+	"numEnemies":3, "enemyX":[4, 12, 12], "enemyY":[7, 10, 4],
 	"door":["n"], "numDoors":1,
-	"deadEnd":["s","w", "e"], "numDeadEnd":3};
+	"deadEnd":["s"], "numDeadEnd":1};
 	
+	room3 = {
+	"numBlocks":20, "blockX":[6, 6, 6, 6, 6, 6, 6, 7, 8, 9, 10, 11, 12, 12, 12, 12, 12, 11, 10, 9], "blockY":[11, 10, 9, 8, 7, 6, 5, 5, 5, 5, 5, 5, 5, 6, 7, 8, 9, 9, 9, 9],
+	"numEnemies":9, "enemyX":[3, 3, 3, 7, 8, 9, 11, 13, 13], "enemyY":[10, 7, 4, 9, 7, 11, 4, 7, 11],
+	"chestX":10, "chestY":7, "chestState":"unopened", "chestContents":"heart", "chestValue":2,
+	"deadEnd":["s", "e"], "numDeadEnd":2};
+	
+	room4 = {
+	"numBlocks":7, "blockX":[5, 5, 5, 5, 5, 5, 5], "blockY":[11, 10, 9, 8 ,7, 6, 5],
+	"numEnemies":5, "enemyX":[2, 2, 3, 11, 11], "enemyY":[9, 4, 7, 6, 9],
+	"chestX":2, "chestY":11, "chestState":"unopened", "chestContents":"heart", "chestValue":1,
+	"deadEnd":["e", "w"], "numDeadEnd":2};
 
-	room2 = {"numGoals":1, "goalX":[7], "goalY":[7]};
+	room5 = {
+	"numBoss":1, "bossX":[5], "bossY":[6],
+	"deadEnd":["s", "w", "e", "n"], "numDeadEnd":4};
+
+	room6 = {
+	"numBlocks":16, "blockX":[1, 2, 3, 4, 5, 6, 6, 7, 8, 9, 9, 10, 11, 12, 13, 14], "blockY":[9, 9, 9, 9, 9, 9, 5, 5, 5, 5, 9, 9, 9, 9, 9, 9],
+	"numEnemies":10, "enemyX":[2, 2, 2, 4, 6, 9, 11, 13, 13, 13], "enemyY":[11, 7, 4, 10, 7, 7, 10, 4, 7, 11],
+	"deadEnd":["e", "w"], "numDeadEnd":2};
 	
-	myRooms = [[room1, room2]];
-	myJsonRooms = [["room1", "room2"]];
+	room7 = {
+	"numBlocks":12, "blockX":[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "blockY":[5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+	"numEnemies":6, "enemyX":[4, 5, 8, 8, 11, 11], "enemyY":[3, 8, 4, 8, 3, 8],
+	"chestX":14, "chestY":3, "chestState":"unopened", "chestContents":"money", "chestValue":50,
+	"deadEnd":["n", "w"], "numDeadEnd":2};
+	
+	room8 = {
+	"numBlocks":32, "blockX":[1, 2, 3, 3, 3, 3, 3, 4, 5, 5, 5, 5, 5, 5, 5, 8, 8, 8, 8, 8, 8, 8, 11, 12, 13, 14, 11, 11, 11, 12, 13, 14 ], "blockY":[9, 9, 9, 8, 7, 6, 5, 5, 5, 6, 7, 8, 9, 10, 11, 9, 8, 7, 6, 5, 4, 3, 5, 5, 5, 5, 11, 10, 9, 9, 9, 9],
+	"numEnemies":7, "enemyX":[2, 6, 6, 9, 10, 11, 13], "enemyY":[4, 4, 9, 11, 7, 4, 7],
+	"chestX":14, "chestY":3, "chestState":"unopened", "chestContents":"key", "chestValue":1,
+	"deadEnd":["s", "n"], "numDeadEnd":2};
+	
+	room9 = {
+	"numBlocks":17, "blockX":[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 12, 12, 12, 12, 11, 10, 9 ], "blockY":[5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 7, 8, 9, 9, 9, 9],
+	"numEnemies":10, "enemyX":[2, 3, 4, 5, 5, 6, 8, 8, 10, 11], "enemyY":[10, 8, 4, 8, 11, 6, 7, 10, 7, 4],
+	"deadEnd":["e", "n"], "numDeadEnd":2};
+	
+	myRooms = [[room1, room4, room7], [room2, room5, room8], [room3, room6, room9]];
+	myJsonRooms = [["room1", "room4", "room7"], ["room2", "room5", "room8"], ["room3", "room6", "room9"]];
 }
