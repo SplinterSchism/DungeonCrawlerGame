@@ -24,6 +24,7 @@ var myGoals = [];
 
 //Animation Variables
 spriteFrame = 0;
+enemyFrame = 0;
 
 //HUD variables
 var myHearts;
@@ -208,7 +209,12 @@ function component(width, height, color, x, y, type) {
 		this.height = height;
 		this.x = x;
 		this.y = y;
-	} 
+	} else if (type == "Enemy") {
+		this.width = width;
+		this.height = height;
+		this.x = x * 30;
+		this.y = y * 30;
+	}
 	else {
 		this.width = width * 30;
 		this.height = height * 30;
@@ -230,6 +236,13 @@ function component(width, height, color, x, y, type) {
 		else if(type == "Player"){
 			ctx.drawImage(this.image, 
 				(spriteFrame * this.width), 0,
+				this.width, this.height,
+				this.x, this.y,
+				this.width, this.height);
+		}
+		else if(type == "Enemy"){
+			ctx.drawImage(this.image, 
+				(enemyFrame * this.width), 0,
 				this.width, this.height,
 				this.x, this.y,
 				this.width, this.height);
@@ -319,7 +332,10 @@ function updateGameArea() {
 	//set myGamePiece initial speed to 0
 	myGamePiece.speedX = 0;
     myGamePiece.speedY = 0;
-
+    
+	//Animate enemy
+	animateEnemy();
+	
 	//Detect Keystrokes
 	
 	//Left Keys
@@ -858,7 +874,7 @@ function createObjects() {
 	}
 
 	for (i = 0; i < currentRoom.numEnemies; i += 1) {
-		myEnemies.push(new component(1, 1, "orange", currentRoom.enemyX[i], currentRoom.enemyY[i], "Enemy"));
+		myEnemies.push(new component(25, 30, "images/Enemy.png", currentRoom.enemyX[i], currentRoom.enemyY[i], "Enemy"));
 	}
 	
 	for (i = 0; i < currentRoom.numGoals; i += 1) {
@@ -1042,7 +1058,7 @@ function bossMovement() {
  	}
 }
 
-//AnimateDown
+
 function animateDown() {
 	
 	if (spriteFrame != 0 && spriteFrame != 1) {
@@ -1135,6 +1151,13 @@ function animateSwordLeft() {
 	if (everyInterval(5)) {
 		spriteFrame = myGameArea.frameNo % 2;
 		spriteFrame = spriteFrame + 14;
+	}
+}
+
+function animateEnemy() {
+	
+	if (everyInterval(15)) {
+		enemyFrame = myGameArea.frameNo % 2;
 	}
 }
 
