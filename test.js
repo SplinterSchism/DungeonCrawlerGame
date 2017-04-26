@@ -87,7 +87,9 @@ function startGame() {
 	keyPickup = new sound("sounds/keyPickup.mp3");
 	moneyPickup = new sound("sounds/moneyPickup.mp3");
 	nextLevelTeleport = new sound("sounds/nextLevelTeleport.mp3");
-	levelMusic = new sound("music/TavernJig.wav");
+	if (level == 1) {
+		levelMusic = new sound("music/TavernJig.wav");
+	}
 	if (level == 2) {
 		levelMusic = new sound("music/Outcast.mp3");
 	}
@@ -181,6 +183,7 @@ var myGameArea = {
 		bossDmg = 0;
 		window.localStorage.clear()
 		deleteObjects();
+		levelMusic.stop();
 		startGame();
 	}
 }
