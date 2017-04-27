@@ -5,7 +5,8 @@ window.localStorage.clear();
 //Variables for components
 var myBackground;
 var myBlackScreen;
-var screen;
+var screen = new component(480, 390, "images/level1.png", 0 , 0, "LevelScreen");
+
 var myGamePiece;
 var swordHitbox;
 
@@ -25,12 +26,15 @@ var myChest = null;
 var myGoals = [];
 
 //Animation Variables
-spriteFrame = 0;
-enemyFrame = 0;
+var spriteFrame = 0;
+var enemyFrame = 0;
+var bossFrame = 0;
+var bossLeft;
+var bossRight;
 
 //HUD variables
 var myHearts;
-var numHearts = 44;
+var numHearts = 45;
 var myMoney;
 var numMoney = 0;
 var myKeys;
@@ -200,15 +204,10 @@ var myGameArea = {
 	
 	level : function() {
 		clearInterval(this.interval);
-		if (level == 1) {
-			screen = new component(480, 390, "images/level1.png", 0 , 0, "LevelScreen");
-		}
-		if (level == 2) {
-			screen = new component(480, 390, "images/level2.png", 0 , 0, "LevelScreen");
-		}
-		if (level == 3) {
-			screen = new component(480, 390, "images/level3.png", 0 , 0, "LevelScreen");
-		}
+		
+		
+		screen = new component(480, 390, "images/level1.png", 0 , 0, "LevelScreen");
+		
 		this.interval = setInterval(showScreen);
 	}
 }
@@ -267,6 +266,13 @@ function component(width, height, color, x, y, type) {
 		else if(type == "Enemy"){
 			ctx.drawImage(this.image, 
 				(enemyFrame * this.width), 0,
+				this.width, this.height,
+				this.x, this.y,
+				this.width, this.height);
+		}
+		else if(type == "Boss"){
+			ctx.drawImage(this.image, 
+				(bossFrame * this.width), 0,
 				this.width, this.height,
 				this.x, this.y,
 				this.width, this.height);
@@ -365,8 +371,13 @@ function updateGameArea() {
 	myGamePiece.speedX = 0;
     myGamePiece.speedY = 0;
     
-	//Animate enemy
+	//Animate enemies
 	animateEnemy();
+	if (bossLeft) {
+		animateBossLeft();
+	} else if (bossRight) {
+		animateBossRight();
+	}
 	
 	//Detect Keystrokes
 	
@@ -652,6 +663,7 @@ function updateGameArea() {
 	for (i = 0; i < currentRoom.numBoss; i += 1) {
 		if(swordHitbox.crashWith(myBoss[i])){
 			bossDmg = bossDmg + 1;
+			animateBossDamage();
 			console.log(bossDmg);
 			if(bossDmg >= 100 * enemySpeed) {
 				myBoss.splice(i,1);
@@ -918,7 +930,7 @@ function createObjects() {
 		myGoals.push(new component(1, 1, "pink", currentRoom.goalX[i], currentRoom.goalY[i], "Goal"));
 	}
 	for (i = 0; i < currentRoom.numBoss; i += 1) {
-		myBoss.push(new component(3, 3, "Red", currentRoom.bossX[i], currentRoom.bossY[i]));
+		myBoss.push(new component(3, 3, "images/Boss.png", currentRoom.bossX[i], currentRoom.bossY[i], "Boss"));
 	}
 	
 	for (i = 0; i < currentRoom.numDeadEnd; i += 1) {
@@ -1053,18 +1065,27 @@ function bossMovement() {
 			if (rndDirection == 1) {
 				myBoss[i].speedX = -1;
 				myBoss[i].speedY = 1;
+				bossLeft = true;
+				bossRight = false;
 			}
 			if (rndDirection == 2) {
 				myBoss[i].speedX = 1;
 				myBoss[i].speedY = -1;
+				animateBossRight();
+				bossLeft = false;
+				bossRight = true;
 			}
 			if (rndDirection == 3) {
 				myBoss[i].speedY = 1;
 				myBoss[i].speedX = 1;
+				bossLeft = false;
+				bossRight = true;
 			}
 			if (rndDirection == 4) {
 				myBoss[i].speedY = -1;
 				myBoss[i].speedX = -1;
+				bossLeft = true;
+				bossRight = false;
 			}
 		}
  	}
@@ -1172,11 +1193,31 @@ function animateEnemy() {
 	}
 }
 
+function animateBossRight() {
+	if (everyInterval(5)) {
+		bossFrame = myGameArea.frameNo % 4;
+	}
+
+}
+
+function animateBossLeft() {
+	if (everyInterval(5)) {
+		bossFrame = myGameArea.frameNo % 4;
+		bossFrame = bossFrame + 4;
+	}
+}
+
+function animateBossDamage() {
+	if (everyInterval(10)) {
+		bossFrame = myGameArea.frameNo % 8;
+		bossFrame = bossFrame + 8;
+	}
+}
+
 function nextLevel() {
 	myGameArea.clear();
 	myBlackScreen.update();
 	
-	console.log(myGamePiece.y);
 	
 	if(myGamePiece.y > 30) {
 			myGamePiece.speedY = -1;
