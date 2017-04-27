@@ -35,7 +35,7 @@ function rooms1() {
 	
 	room7 = {
 	"numBlocks":18, "blockX":[5, 5, 4, 3, 3, 3, 4, 5, 6, 10, 10, 11, 12, 12, 12, 11, 10, 9], "blockY":[11, 10, 9, 8, 7, 6, 5, 4, 3, 11, 10, 9, 8, 7, 6, 5, 4, 3],
-	"deadEnd":["w", "e"], "numDeadEnd":2,
+	"deadEnd":["w", "e", "n"], "numDeadEnd":3,
 	"chestX":11, "chestY":7, "chestState":"unopened", "chestContents":"money", "chestValue":100,
 	"numGoals":1, "goalX":[4], "goalY":[7]};
 

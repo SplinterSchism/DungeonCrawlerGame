@@ -33,7 +33,7 @@ var numHearts = 3;
 var myMoney;
 var numMoney = 0;
 var myKeys;
-var numKeys = 0;
+var numKeys = 1;
 
 //Sound Variables
 var levelMusic;
@@ -50,7 +50,7 @@ var nextLevelTeleport;
 //Global variables
 var roomX = 0;
 var roomY = 0;
-var level = 3;
+var level = 1;
 var currentRoom;
 var transitionDirection;
 var direction = "u";
@@ -186,6 +186,7 @@ var myGameArea = {
 		bossDmg = 0;
 		window.localStorage.clear()
 		deleteObjects();
+		myGoals.splice(0,1);
 		levelMusic.stop();
 		startGame();
 	}
@@ -626,7 +627,8 @@ function updateGameArea() {
 			if(bossDmg >= 100 * enemySpeed) {
 				myBoss.splice(i,1);
 				currentRoom.numBoss = currentRoom.numBoss - 1;
-				numKeys = numKeys + 1; 
+				numKeys = numKeys + 1;
+				myGoals.push(new component(1, 1, "pink", currentRoom.goalX = 11, currentRoom.goalY = 7, "Goal"));
 			}
 		}
 	}
