@@ -5,7 +5,7 @@ window.localStorage.clear();
 //Variables for components
 var myBackground;
 var myBlackScreen;
-var levelScreen;
+var screen;
 var myGamePiece;
 var swordHitbox;
 
@@ -51,7 +51,7 @@ var nextLevelTeleport;
 //Global variables
 var roomX = 0;
 var roomY = 0;
-var level = 1;
+var level = 3;
 var currentRoom;
 var transitionDirection;
 var direction = "u";
@@ -171,7 +171,10 @@ var myGameArea = {
 		deleteObjects();
 		//Stop Music
 		levelMusic.stop();
-		startGame();
+		
+		screen = new component(480, 390, "images/GameOver.png", 0 , 0, "LevelScreen");
+		
+		this.interval = setInterval(showScreen);
 	},
 	
 	next : function() {
@@ -198,13 +201,13 @@ var myGameArea = {
 	level : function() {
 		clearInterval(this.interval);
 		if (level == 1) {
-			levelScreen = new component(480, 390, "images/level1.png", 0 , 0, "LevelScreen");
+			screen = new component(480, 390, "images/level1.png", 0 , 0, "LevelScreen");
 		}
 		if (level == 2) {
-			levelScreen = new component(480, 390, "images/level2.png", 0 , 0, "LevelScreen");
+			screen = new component(480, 390, "images/level2.png", 0 , 0, "LevelScreen");
 		}
 		if (level == 3) {
-			levelScreen = new component(480, 390, "images/level3.png", 0 , 0, "LevelScreen");
+			screen = new component(480, 390, "images/level3.png", 0 , 0, "LevelScreen");
 		}
 		this.interval = setInterval(showScreen);
 	}
@@ -1189,7 +1192,7 @@ function nextLevel() {
 
 function showScreen() {
 	opacity = opacity + 0.01;
-	levelScreen.update();
+	screen.update();
 	
 	if (opacity > 5){
 		opacity = 0;
