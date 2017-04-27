@@ -50,7 +50,7 @@ var nextLevelTeleport;
 //Global variables
 var roomX = 0;
 var roomY = 0;
-var level = 1;
+var level = 3;
 var currentRoom;
 var transitionDirection;
 var direction = "u";
@@ -839,10 +839,12 @@ function swordCollision(myObj) {
 		if (swordHitbox.x > myObj.x){
 			if(swordHitbox.speedX < 0){
 				myGamePiece.speedX = 5;
+				swordHitWall.play();
 			}
 		} else if (swordHitbox.x < myObj.x){
 			if(swordHitbox.speedX > 0){
 				myGamePiece.speedX = -5;
+				swordHitWall.play();
 			}
 		}
 	}
@@ -850,15 +852,16 @@ function swordCollision(myObj) {
 		if (swordHitbox.y < myObj.y){
 			if(swordHitbox.speedY > 0){
 				myGamePiece.speedY = -5;
+				swordHitWall.play();
 			}
 		}
 		if (swordHitbox.y > myObj.y){
 			if(swordHitbox.speedY < 0){
 				myGamePiece.speedY = 5;
+				swordHitWall.play();
 			}
 		}
 	}
-	swordHitWall.play();
 }
 
 function changeRoom(direction) {
