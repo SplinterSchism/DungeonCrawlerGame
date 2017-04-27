@@ -5,6 +5,7 @@ window.localStorage.clear();
 //Variables for components
 var myBackground;
 var myBlackScreen;
+var levelScreen;
 var myGamePiece;
 var swordHitbox;
 
@@ -29,7 +30,7 @@ enemyFrame = 0;
 
 //HUD variables
 var myHearts;
-var numHearts = 3;
+var numHearts = 44;
 var myMoney;
 var numMoney = 0;
 var myKeys;
@@ -55,12 +56,13 @@ var currentRoom;
 var transitionDirection;
 var direction = "u";
 var enemySpeed = 1;
+var opacity = 0;
 
 //StartGame: Gets called when loaded. Calls the start method of myGameArea and create components
 function startGame() {
 	
 	myBackground = new component(480, 330, "images/Background.png", 0, 60, "Background");
-	myBlackScreen = new component(480, 330, "images/BlackScreen.png", 0 , 60, "BlackScreen");
+	myBlackScreen = new component(480, 390, "images/BlackScreen.png", 0 , 0, "BlackScreen");
 	myGamePiece = new component(22, 32, "images/DungeonMan.png", 225, 325, "Player");
     swordHitbox = new component(0, 0, "blue", -5, -5, "Sword");
 	
@@ -188,7 +190,23 @@ var myGameArea = {
 		deleteObjects();
 		myGoals.splice(0,1);
 		levelMusic.stop();
-		startGame();
+		
+		this.interval = setInterval(nextLevel);
+		
+	},
+	
+	level : function() {
+		clearInterval(this.interval);
+		if (level == 1) {
+			levelScreen = new component(480, 390, "images/level1.png", 0 , 0, "LevelScreen");
+		}
+		if (level == 2) {
+			levelScreen = new component(480, 390, "images/level2.png", 0 , 0, "LevelScreen");
+		}
+		if (level == 3) {
+			levelScreen = new component(480, 390, "images/level3.png", 0 , 0, "LevelScreen");
+		}
+		this.interval = setInterval(showScreen);
 	}
 }
 
@@ -207,7 +225,7 @@ function component(width, height, color, x, y, type) {
 	this.type = type;
 	this.image = new Image();
 	this.image.src = color;
-	if(type == "Player" || type == "Sword" || type == "text" || type == "Background" || type == "BlackScreen") {
+	if(type == "Player" || type == "Sword" || type == "text" || type == "Background" || type == "BlackScreen" || type == "LevelScreen") {
 		this.width = width;
 		this.height = height;
 		this.x = x;
@@ -260,6 +278,14 @@ function component(width, height, color, x, y, type) {
 			ctx.drawImage(this.image, 
 				this.x, this.y,
 				this.width, this.height);
+		}
+		else if (type == "LevelScreen"){
+			ctx.save();
+			ctx.globalAlpha = opacity;
+			ctx.drawImage(this.image,
+				this.x, this.y,
+				this.width, this.height);
+			ctx.restore();
 		}
 		else if (type == "Chest"){
 			if(currentRoom.chestState == "opened"){
@@ -1140,6 +1166,34 @@ function animateEnemy() {
 	
 	if (everyInterval(15)) {
 		enemyFrame = myGameArea.frameNo % 2;
+	}
+}
+
+function nextLevel() {
+	myGameArea.clear();
+	myBlackScreen.update();
+	
+	console.log(myGamePiece.y);
+	
+	if(myGamePiece.y > 30) {
+			myGamePiece.speedY = -1;
+			myGamePiece.speedX = 0;
+			myGamePiece.newPos();
+			myGamePiece.update();
+	}
+	else {
+		myGameArea.level();
+	}
+	
+}
+
+function showScreen() {
+	opacity = opacity + 0.01;
+	levelScreen.update();
+	
+	if (opacity > 5){
+		opacity = 0;
+		startGame();
 	}
 }
 
