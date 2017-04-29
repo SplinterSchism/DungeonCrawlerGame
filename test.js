@@ -1294,6 +1294,7 @@ function nextLevel() {
 			myGamePiece.speedX = 0;
 			myGamePiece.newPos();
 			myGamePiece.update();
+			animateSpin();
 	}
 	else {
 		myGameArea.level();
