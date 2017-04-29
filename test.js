@@ -118,10 +118,10 @@ function startGame() {
 	myWalls.push(new component(1, 3.5, "green", 15, 3));
 	myWalls.push(new component(1, 3.5, "green", 15, 8.5));
 	
-	myEnemyWallsWalls.push(new component(2, 1, "green", 7, 1));
-	myEnemyWallsWalls.push(new component(2, 1, "green", 7, 1));
-	myEnemyWallsWalls.push(new component(1, 2, "green", 7, 1));
-	myEnemyWallsWalls.push(new component(1, 2, "green", 7, 1));
+	myEnemyWalls.push(new component(2, 1, "green", 7, 1));
+	myEnemyWalls.push(new component(2, 1, "green", 7, 1));
+	myEnemyWalls.push(new component(1, 2, "green", 7, 1));
+	myEnemyWalls.push(new component(1, 2, "green", 7, 1));
 	
 	
 	//Sounds
