@@ -52,11 +52,12 @@ var myHearts;
 var myHeartIcon;
 var numHearts = 45;
 var myMoney;
+var myMoneyIcon;
 var numMoney = 0;
 var myKeys;
 var myKeyIcon;
 var numKeys = 1;
-var myHighScore = 0;
+var myHighScoreIcon;
 
 //Sound Variables
 var levelMusic;
@@ -91,13 +92,16 @@ function startGame() {
 	myGamePiece = new component(22, 32, "images/DungeonMan.png", 225, 325, "Player");
     swordHitbox = new component(0, 0, "blue", -5, -5, "Sword");
 	
+	//Hud Components
 	myHud = new component(16, 2, "black", 0, 0, "HUD");
 	myHearts = new component("30px", "Consolas", "red", 40, 40, "text");
-	myMoney = new component("30px", "Consolas", "green", 120, 40, "text");
-	myKeys = new component("30px", "Consolas", "blue", 200, 40, "text");
-	myHighScore = new component("30px", "Consolas", "yellow", 300, 40, "text");
-	myKeyIcon = new component(44, 40, "images/Key.png", 160, 10, "Icon");
+	myMoney = new component("30px", "Consolas", "green", 130, 40, "text");
+	myKeys = new component("30px", "Consolas", "blue", 240, 40, "text");
+	myKeyIcon = new component(44, 40, "images/Key.png", 200, 10, "Icon");
 	myHeartIcon = new component(26, 24, "images/Heart.png", 12, 20, "Icon");
+	myMoneyIcon = new component(26, 24, "images/Coin.png", 90, 20, "Icon");
+	myHighScoreIcon = new component("15px", "Consolas", "yellow", 320, 15, "text");
+	highScore = new component("30px", "Consolas", "yellow", 300, 40, "text");
 	
 	myWalls.push(new component(7, 1, "green", 0, 2));
 	myWalls.push(new component(7, 1, "green", 9, 2));
@@ -756,17 +760,19 @@ function updateGameArea() {
     myGamePiece.update();
     
 	//update HUD
-	myHud.update();
-	myHearts.text = numHearts;
-	myHearts.update();
-	myMoney.text = numMoney;
-	myMoney.update();
-	myKeys.text = numKeys;
-	myKeys.update();
-	myHighScore.text = highScore;
-	myHighScore.update();
-	myKeyIcon.update();
-	myHeartIcon.update();
+		myHud.update();
+		myHearts.text = numHearts;
+		myHearts.update();
+		myMoney.text = numMoney;
+		myMoney.update();
+		myKeys.text = numKeys;
+		myKeys.update();
+		myHighScoreIcon.text = "High Score:";
+		//Icons
+		myMoneyIcon.update();
+		myKeyIcon.update();
+		myHeartIcon.update();
+		myHighScoreIcon.update();
 
 	for (i = 0; i < myBlocks.length; i += 1) {
 		myBlocks[i].update();
