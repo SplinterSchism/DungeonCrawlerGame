@@ -27,6 +27,7 @@ var swordHitbox;
 var myHud;
 
 var myWalls = [];
+var myEnemyWalls = [];
 
 var myBlocks = [];
 var myEnemies = [];
@@ -83,7 +84,7 @@ var transitionDirection;
 var direction = "u";
 var enemySpeed = 1;
 var opacity = 0;
-titleFlag = true;
+var titleFlag = true;
 
 //StartGame: Gets called when loaded. Calls the start method of myGameArea and create components
 function startGame() {
@@ -117,7 +118,11 @@ function startGame() {
 	myWalls.push(new component(1, 3.5, "green", 15, 3));
 	myWalls.push(new component(1, 3.5, "green", 15, 8.5));
 	
-	myWalls.push(new component(7, 1, "green", -1, 2));
+	myEnemyWallsWalls.push(new component(2, 1, "green", 7, 1));
+	myEnemyWallsWalls.push(new component(2, 1, "green", 7, 1));
+	myEnemyWallsWalls.push(new component(1, 2, "green", 7, 1));
+	myEnemyWallsWalls.push(new component(1, 2, "green", 7, 1));
+	
 	
 	//Sounds
 	swordHitWall = new sound("sounds/SwordHitWall.mp3");
@@ -574,6 +579,14 @@ function updateGameArea() {
 		}
 	}
 	
+	//Sword and dead end Collision
+	for (i = 0; i < myDeadEnds.length; i += 1) {
+		if(swordHitbox.crashWith(myDeadEnds[i])){
+			swordCollision(myDeadEnds[i]);
+			swordHitbox = new component(0, 0, "blue", -5, -5, "Sword");
+		}
+	}
+	
 	//Sword and door Collision
 	for (i = 0; i < currentRoom.numDoors; i += 1) {
 		if(swordHitbox.crashWith(myDoors[i])){
@@ -581,8 +594,8 @@ function updateGameArea() {
 				myDoors.splice(i,1);
 				currentRoom.numDoors = currentRoom.numDoors - 1;
 				numKeys = numKeys - 1;
+				openDoor.play();
 			}
-			openDoor.play();
 		}
 	}
 	
@@ -688,6 +701,15 @@ function updateGameArea() {
 		for (j = 0; j < myDeadEnds.length; j += 1) {
 			if (myEnemies[i].crashWith(myDeadEnds[j])) {
 				solidCollision(myDeadEnds[j], myEnemies[i]);
+			}
+		}
+	}
+	
+	//Enemy Collision with doors
+	for (i = 0; i < myEnemies.length; i += 1) {
+		for (j = 0; j < myDoors.length; j += 1) {
+			if (myEnemies[i].crashWith(myDoors[j])) {
+				solidCollision(myDoors[j], myEnemies[i]);
 			}
 		}
 	}
