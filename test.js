@@ -51,13 +51,13 @@ var bossRight;
 //HUD variables
 var myHearts;
 var myHeartIcon;
-var numHearts = 45;
+var numHearts = 3;
 var myMoney;
 var myMoneyIcon;
 var numMoney = 0;
 var myKeys;
 var myKeyIcon;
-var numKeys = 1;
+var numKeys = 0;
 var myHighScore;
 var myHighScoreIcon;
 
@@ -119,9 +119,9 @@ function startGame() {
 	myWalls.push(new component(1, 3.5, "green", 15, 8.5));
 	
 	myEnemyWalls.push(new component(2, 1, "green", 7, 1));
-	myEnemyWalls.push(new component(2, 1, "green", 7, 1));
-	myEnemyWalls.push(new component(1, 2, "green", 7, 1));
-	myEnemyWalls.push(new component(1, 2, "green", 7, 1));
+	myEnemyWalls.push(new component(2, 1, "green", 7, 13));
+	myEnemyWalls.push(new component(1, 2, "green", -1, 6.5));
+	myEnemyWalls.push(new component(1, 2, "green", 16, 6.5));
 	
 	
 	//Sounds
@@ -683,6 +683,15 @@ function updateGameArea() {
 		for (j = 0; j < myWalls.length; j += 1) {
 			if (myEnemies[i].crashWith(myWalls[j])) {
 				solidCollision(myWalls[j], myEnemies[i]);
+			}
+		}
+	}
+	
+	//Enemy Collision with Enemy Walls
+	for (i = 0; i < myEnemies.length; i += 1) {
+		for (j = 0; j < myEnemyWalls.length; j += 1) {
+			if (myEnemies[i].crashWith(myEnemyWalls[j])) {
+				solidCollision(myEnemyWalls[j], myEnemies[i]);
 			}
 		}
 	}
