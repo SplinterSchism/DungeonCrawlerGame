@@ -40,7 +40,9 @@ var numHearts = 45;
 var myMoney;
 var numMoney = 0;
 var myKeys;
+var myKeyIcon;
 var numKeys = 1;
+var myHighScore = 0;
 
 //Sound Variables
 var levelMusic;
@@ -53,6 +55,8 @@ var heartPickup;
 var keyPickup;
 var moneyPickup;
 var nextLevelTeleport;
+var bossGrunt;
+var bossDeath;
 
 //Global variables
 var roomX = 0;
@@ -77,6 +81,8 @@ function startGame() {
 	myHearts = new component("30px", "Consolas", "red", 40, 40, "text");
 	myMoney = new component("30px", "Consolas", "green", 120, 40, "text");
 	myKeys = new component("30px", "Consolas", "blue", 200, 40, "text");
+	myHighScore = new component("30px", "Consolas", "yellow", 300, 40, "text");
+	myKeyIcon = new component(44, 40, "images/Key.png", 180, 40, "Key");
 	
 	myWalls.push(new component(7, 1, "green", 0, 2));
 	myWalls.push(new component(7, 1, "green", 9, 2));
@@ -101,6 +107,9 @@ function startGame() {
 	keyPickup = new sound("sounds/keyPickup.mp3");
 	moneyPickup = new sound("sounds/moneyPickup.mp3");
 	nextLevelTeleport = new sound("sounds/nextLevelTeleport.mp3");
+	bossGrunt = new sound("sounds/bossGrunt.wav");
+	bossDeath = new sound("sounds/bossDeath.wav");
+	
 	if (level == 1) {
 		levelMusic = new sound("music/TavernJig.wav");
 	}
@@ -247,7 +256,7 @@ function component(width, height, color, x, y, type) {
 	this.type = type;
 	this.image = new Image();
 	this.image.src = color;
-	if(type == "Player" || type == "Sword" || type == "text" || type == "Background" || type == "BlackScreen" || type == "LevelScreen") {
+	if(type == "Player" || type == "Sword" || type == "text" || type == "Background" || type == "BlackScreen" || type == "LevelScreen" || type == "Key") {
 		this.width = width;
 		this.height = height;
 		this.x = x;
@@ -310,7 +319,7 @@ function component(width, height, color, x, y, type) {
 			ctx.strokeText(this.text, this.x, this.y)
 			ctx.fillText(this.text, this.x, this.y);	
 		} 
-		else if(type == "Sword" || type == "Block" || type == "DeadEnd" || type == "Door" || type == "BlackScreen" ){
+		else if(type == "Sword" || type == "Block" || type == "DeadEnd" || type == "Door" || type == "BlackScreen" || type == "Key"){
 			ctx.drawImage(this.image, 
 				this.x, this.y,
 				this.width, this.height);
@@ -460,7 +469,7 @@ function updateGameArea() {
 		if (direction == "u") {
 			swordHitbox = new component(4, 20, "images/SwordUp.png", (myGamePiece.x + 9), (myGamePiece.y - 20), "Sword");
 			if ((myGameArea.keys && myGameArea.keys[38]) || (myGameArea.keys && myGameArea.keys[87]) || (controls.moveForward)) {
-				animateSwordUp();
+				animateSwordUp();				
 			}
 			else {
 				spriteFrame = 10;
@@ -692,8 +701,10 @@ function updateGameArea() {
 		if(swordHitbox.crashWith(myBoss[i])){
 			bossDmg = bossDmg + 1;
 			animateBossDamage();
+			bossGrunt.play();
 			console.log(bossDmg);
 			if(bossDmg >= 100 * enemySpeed) {
+				bossDeath.play();
 				myBoss.splice(i,1);
 				currentRoom.numBoss = currentRoom.numBoss - 1;
 				numKeys = numKeys + 1;
@@ -728,6 +739,9 @@ function updateGameArea() {
 	myMoney.update();
 	myKeys.text = numKeys;
 	myKeys.update();
+	myHighScore.text = numMoney;
+	myHighScore.update();
+	myKeyIcon.update();
 
 	for (i = 0; i < myBlocks.length; i += 1) {
 		myBlocks[i].update();
