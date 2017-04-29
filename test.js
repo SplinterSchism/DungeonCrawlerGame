@@ -30,6 +30,7 @@ var myGoals = [];
 var spriteFrame = 0;
 var enemyFrame = 0;
 var bossFrame = 0;
+var portalFrame = 0;
 var bossLeft;
 var bossRight;
 
@@ -285,6 +286,13 @@ function component(width, height, color, x, y, type) {
 				this.x, this.y,
 				this.width, this.height);
 		}
+		else if(type == "Goal"){
+			ctx.drawImage(this.image, 
+				(portalFrame * this.width), 0,
+				this.width, this.height,
+				this.x, this.y,
+				this.width, this.height);
+		}
 		else if (type == "text") {
 			ctx.font = this.width + " " + this.height;
 			ctx.fillStyle = color;
@@ -381,6 +389,7 @@ function updateGameArea() {
     
 	//Animate enemies
 	animateEnemy();
+	animatePortal();
 	if (bossLeft) {
 		animateBossLeft();
 	} else if (bossRight) {
@@ -677,7 +686,7 @@ function updateGameArea() {
 				myBoss.splice(i,1);
 				currentRoom.numBoss = currentRoom.numBoss - 1;
 				numKeys = numKeys + 1;
-				myGoals.push(new component(1, 1, "pink", currentRoom.goalX = 11, currentRoom.goalY = 7, "Goal"));
+				myGoals.push(new component(1, 1, "images/Portal.png", currentRoom.goalX = 11, currentRoom.goalY = 7, "Goal"));
 			}
 		}
 	}
@@ -935,7 +944,7 @@ function createObjects() {
 	}
 	
 	for (i = 0; i < currentRoom.numGoals; i += 1) {
-		myGoals.push(new component(1, 1, "pink", currentRoom.goalX[i], currentRoom.goalY[i], "Goal"));
+		myGoals.push(new component(1, 1, "images/Portal.png", currentRoom.goalX[i], currentRoom.goalY[i], "Goal"));
 	}
 	for (i = 0; i < currentRoom.numBoss; i += 1) {
 		myBoss.push(new component(3, 3, "images/Boss.png", currentRoom.bossX[i], currentRoom.bossY[i], "Boss"));
@@ -1219,6 +1228,12 @@ function animateBossDamage() {
 	if (everyInterval(10)) {
 		bossFrame = myGameArea.frameNo % 8;
 		bossFrame = bossFrame + 8;
+	}
+}
+
+function animatePortal() {
+	if (everyInterval(15)) {
+		portalFrame = myGameArea.frameNo % 2;
 	}
 }
 
