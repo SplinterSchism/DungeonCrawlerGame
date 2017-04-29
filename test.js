@@ -57,6 +57,7 @@ var numMoney = 0;
 var myKeys;
 var myKeyIcon;
 var numKeys = 1;
+var myHighScore;
 var myHighScoreIcon;
 
 //Sound Variables
@@ -93,15 +94,19 @@ function startGame() {
     swordHitbox = new component(0, 0, "blue", -5, -5, "Sword");
 	
 	//Hud Components
-	myHud = new component(16, 2, "black", 0, 0, "HUD");
-	myHearts = new component("30px", "Consolas", "red", 40, 40, "text");
-	myMoney = new component("30px", "Consolas", "green", 130, 40, "text");
-	myKeys = new component("30px", "Consolas", "blue", 240, 40, "text");
-	myKeyIcon = new component(44, 40, "images/Key.png", 200, 10, "Icon");
-	myHeartIcon = new component(26, 24, "images/Heart.png", 12, 20, "Icon");
-	myMoneyIcon = new component(26, 24, "images/Coin.png", 90, 20, "Icon");
-	myHighScoreIcon = new component("15px", "Consolas", "yellow", 320, 15, "text");
-	highScore = new component("30px", "Consolas", "yellow", 300, 40, "text");
+		myHud = new component(16, 2, "black", 0, 0, "HUD");
+		//Hearts
+		myHeartIcon = new component(26, 24, "images/Heart.png", 12, 20, "Icon");
+		myHearts = new component("30px", "Consolas", "red", 40, 40, "text");
+		//Keys
+		myKeyIcon = new component(44, 40, "images/Key.png", 80, 10, "Icon");
+		myKeys = new component("30px", "Consolas", "blue", 120, 40, "text");
+		//Money
+		myMoneyIcon = new component(26, 24, "images/Coin.png", 160, 20, "Icon");
+		myMoney = new component("30px", "Consolas", "green", 190, 40, "text");
+		//High Score
+		myHighScoreIcon = new component("15px", "Consolas", "yellow", 320, 15, "text");
+		myHighScore = new component("30px", "Consolas", "yellow", 350, 40, "text");
 	
 	myWalls.push(new component(7, 1, "green", 0, 2));
 	myWalls.push(new component(7, 1, "green", 9, 2));
@@ -768,6 +773,8 @@ function updateGameArea() {
 		myKeys.text = numKeys;
 		myKeys.update();
 		myHighScoreIcon.text = "High Score:";
+		myHighScore.text = highScore;
+		myHighScore.update();
 		//Icons
 		myMoneyIcon.update();
 		myKeyIcon.update();
