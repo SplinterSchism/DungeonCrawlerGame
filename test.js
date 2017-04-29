@@ -531,6 +531,7 @@ function updateGameArea() {
 	for (i = 0; i < myWalls.length; i += 1) {
 		if(swordHitbox.crashWith(myWalls[i])){
 			swordCollision(myWalls[i]);
+			swordHitbox = new component(0, 0, "blue", -5, -5, "Sword");
 		}
 	}
 	
@@ -538,6 +539,7 @@ function updateGameArea() {
 	for (i = 0; i < myBlocks.length; i += 1) {
 		if(swordHitbox.crashWith(myBlocks[i])){
 			swordCollision(myBlocks[i]);
+			swordHitbox = new component(0, 0, "blue", -5, -5, "Sword");
 		}
 	}
 	
