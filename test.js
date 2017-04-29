@@ -5,7 +5,8 @@ window.localStorage.clear();
 //Variables for components
 var myBackground;
 var myBlackScreen;
-var screen = new component(480, 390, "images/level1.png", 0 , 0, "LevelScreen");
+var screen;
+
 
 var myGamePiece;
 var swordHitbox;
@@ -55,7 +56,7 @@ var nextLevelTeleport;
 //Global variables
 var roomX = 0;
 var roomY = 0;
-var level = 3;
+var level = 1;
 var currentRoom;
 var transitionDirection;
 var direction = "u";
@@ -205,11 +206,18 @@ var myGameArea = {
 	level : function() {
 		clearInterval(this.interval);
 		
-		
-		screen = new component(480, 390, "images/level1.png", 0 , 0, "LevelScreen");
-		
-		this.interval = setInterval(showScreen);
-	}
+		if (level == 1) {
+			screen = new component(480, 390, "images/Level1.png", 0 , 0, "LevelScreen");
+		}
+		else if (level == 2) {
+			screen = new component(480, 390, "images/Level2.png", 0 , 0, "LevelScreen");
+		}
+		else if (level == 3) {
+			screen = new component(480, 390, "images/Level3.png", 0 , 0, "LevelScreen");
+		}
+			
+			this.interval = setInterval(showScreen);
+		}
 }
 
 //Control flags for mobile
