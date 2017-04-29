@@ -49,6 +49,7 @@ var bossRight;
 
 //HUD variables
 var myHearts;
+var myHeartIcon;
 var numHearts = 45;
 var myMoney;
 var numMoney = 0;
@@ -95,7 +96,8 @@ function startGame() {
 	myMoney = new component("30px", "Consolas", "green", 120, 40, "text");
 	myKeys = new component("30px", "Consolas", "blue", 200, 40, "text");
 	myHighScore = new component("30px", "Consolas", "yellow", 300, 40, "text");
-	myKeyIcon = new component(44, 40, "images/Key.png", 180, 40, "Key");
+	myKeyIcon = new component(44, 40, "images/Key.png", 160, 10, "Icon");
+	myHeartIcon = new component(26, 24, "images/Heart.png", 12, 20, "Icon");
 	
 	myWalls.push(new component(7, 1, "green", 0, 2));
 	myWalls.push(new component(7, 1, "green", 9, 2));
@@ -276,7 +278,7 @@ function component(width, height, color, x, y, type) {
 	this.type = type;
 	this.image = new Image();
 	this.image.src = color;
-	if(type == "Player" || type == "Sword" || type == "text" || type == "Background" || type == "BlackScreen" || type == "LevelScreen" || type == "Key") {
+	if(type == "Player" || type == "Sword" || type == "text" || type == "Background" || type == "BlackScreen" || type == "LevelScreen" || type == "Icon") {
 		this.width = width;
 		this.height = height;
 		this.x = x;
@@ -339,7 +341,7 @@ function component(width, height, color, x, y, type) {
 			ctx.strokeText(this.text, this.x, this.y)
 			ctx.fillText(this.text, this.x, this.y);	
 		} 
-		else if(type == "Sword" || type == "Block" || type == "DeadEnd" || type == "Door" || type == "BlackScreen" || type == "Key"){
+		else if(type == "Sword" || type == "Block" || type == "DeadEnd" || type == "Door" || type == "BlackScreen" || type == "Icon"){
 			ctx.drawImage(this.image, 
 				this.x, this.y,
 				this.width, this.height);
@@ -764,6 +766,7 @@ function updateGameArea() {
 	myHighScore.text = highScore;
 	myHighScore.update();
 	myKeyIcon.update();
+	myHeartIcon.update();
 
 	for (i = 0; i < myBlocks.length; i += 1) {
 		myBlocks[i].update();
