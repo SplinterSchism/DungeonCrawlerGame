@@ -1,5 +1,18 @@
 //Dungeon Master Prototype 1: Keyboard Controls
+
+
+
+//Set up high score
+var highScore;
+if(localStorage.getItem("HighScore") === null) {
+		highScore = 0;
+} else {
+	text = localStorage.getItem("HighScore");
+	highScore = JSON.parse(text);
+}
 window.localStorage.clear();
+text = JSON.stringify(highScore);
+localStorage.setItem("HighScore", text);
 
 
 //Variables for components
@@ -186,13 +199,20 @@ var myGameArea = {
 	stop : function() {
 		myGameArea.clear();
 		clearInterval(this.interval);
+		window.localStorage.clear();
+		
+		if (numMoney > highScore) {
+			highScore = numMoney;
+			text = JSON.stringify(highScore);
+			localStorage.setItem("HighScore", text);
+		}
+		
 		numHearts = 3;
 		numMoney = 0;
 		numKeys = 0;
 		roomX = 0;
 		roomY = 0;
 		bossDmg = 0;
-		window.localStorage.clear();
 		deleteObjects();
 		//Stop Music
 		levelMusic.stop();
@@ -741,7 +761,7 @@ function updateGameArea() {
 	myMoney.update();
 	myKeys.text = numKeys;
 	myKeys.update();
-	myHighScore.text = numMoney;
+	myHighScore.text = highScore;
 	myHighScore.update();
 	myKeyIcon.update();
 
