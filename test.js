@@ -63,6 +63,7 @@ var transitionDirection;
 var direction = "u";
 var enemySpeed = 1;
 var opacity = 0;
+titleFlag = true;
 
 //StartGame: Gets called when loaded. Calls the start method of myGameArea and create components
 function startGame() {
@@ -85,6 +86,8 @@ function startGame() {
 	myWalls.push(new component(1, 3.5, "green", 0, 8.5));
 	myWalls.push(new component(1, 3.5, "green", 15, 3));
 	myWalls.push(new component(1, 3.5, "green", 15, 8.5));
+	
+	myWalls.push(new component(7, 1, "green", -1, 2));
 	
 	//Sounds
 	swordHitWall = new sound("sounds/SwordHitWall.mp3");
@@ -132,9 +135,6 @@ var myGameArea = {
 		
 		//Variable to count frames
 		this.frameNo = 0;
-		
-		//Starts the game
-		myGameArea.update();
 
 		//Event listeners to detect keystrokes
 		window.addEventListener('keydown', function (e) {
@@ -144,6 +144,16 @@ var myGameArea = {
         window.addEventListener('keyup', function (e) {
             myGameArea.keys[e.keyCode] = false;
         })
+		
+		if (titleFlag) {
+			titleFlag = false;
+		screen = new component(480, 390, "images/Title.png", 0 , 0, "LevelScreen");
+		this.interval = setInterval(titleScreen);
+		} else {
+			//Starts the game
+			myGameArea.update();
+		}
+
     },
 
 	//Runs main loop, update game area
@@ -216,9 +226,10 @@ var myGameArea = {
 		else if (level == 3) {
 			screen = new component(480, 390, "images/Level3.png", 0 , 0, "LevelScreen");
 		}
+		
 			
-			this.interval = setInterval(showScreen);
-		}
+		this.interval = setInterval(showScreen);
+	}
 }
 
 //Control flags for mobile
@@ -741,7 +752,9 @@ function updateGameArea() {
 		myBoss[i].update();
 	}
 	
-	myChest.update();	
+	if (!(myChest === null)) {
+		myChest.update();	
+	}
 
 }
 
@@ -1237,6 +1250,24 @@ function animatePortal() {
 	}
 }
 
+function animateSpin() {
+	if (spriteFrame == 0) {
+		spriteFrame = 4;
+	}
+	else if (spriteFrame == 4) {
+		spriteFrame = 2;
+	}
+	else if (spriteFrame == 2) {
+		spriteFrame = 6;
+	}
+	else if (spriteFrame == 6) {
+		spriteFrame = 0;
+	}
+	else {
+		spriteFrame = 0
+	}
+}
+
 function nextLevel() {
 	myGameArea.clear();
 	myBlackScreen.update();
@@ -1262,6 +1293,26 @@ function showScreen() {
 		opacity = 0;
 		startGame();
 	}
+}
+
+
+function titleScreen() {
+	opacity = 1;
+	screen.update();
+	
+	if ((myGameArea.keys && myGameArea.keys[37]) || (myGameArea.keys && myGameArea.keys[65]) ||(controls.turnLeft)          //Left
+		|| (myGameArea.keys && myGameArea.keys[39]) || (myGameArea.keys && myGameArea.keys[68]) || (controls.turnRight)     //Right
+		|| (myGameArea.keys && myGameArea.keys[38]) || (myGameArea.keys && myGameArea.keys[87]) || (controls.moveForward)   //Up
+		|| (myGameArea.keys && myGameArea.keys[40]) || (myGameArea.keys && myGameArea.keys[83]) || (controls.moveBackward)  //Down
+		|| (controls.shooting) || (myGameArea.keys && myGameArea.keys[32])) {                                                //Sword
+		
+			opacity = 0;
+			
+			//Starts the game
+			myGameArea.update();
+		}
+	
+	
 }
 
 //starts the game once the page is loaded.
