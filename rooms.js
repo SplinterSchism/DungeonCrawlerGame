@@ -1,3 +1,6 @@
+//rooms.js 
+//Jonathan Meehan
+
 function rooms1() {
 	room1 = { 
 	"numBlocks":12, "blockX":[9, 9, 9, 9, 9, 9, 8, 7, 6, 5, 2, 1], "blockY":[3, 4, 5, 6, 7, 8, 8, 8, 8, 8, 8, 8],

@@ -1,25 +1,18 @@
-//Dungeon Master Prototype 1: Keyboard Controls
+//DungeonDude.js
+//Jonathan Meehan
+//Andrew Elis
 
-
-
-//Set up high score
-var highScore;
-if(localStorage.getItem("HighScore") === null) {
-		highScore = 0;
-} else {
-	text = localStorage.getItem("HighScore");
-	highScore = JSON.parse(text);
-}
-window.localStorage.clear();
-text = JSON.stringify(highScore);
-localStorage.setItem("HighScore", text);
-
+//Control Variables
+var numHearts = 3;
+var numKeys = 0;
+var numMoney = 0;
+var level = 1;
+var enemySpeed = 1;
 
 //Variables for components
 var myBackground;
 var myBlackScreen;
 var screen;
-
 
 var myGamePiece;
 var swordHitbox;
@@ -28,8 +21,8 @@ var myHud;
 
 var myWalls = [];
 var myEnemyWalls = [];
-
 var myBlocks = [];
+
 var myEnemies = [];
 var myBoss = [];
 var bossDmg = 0;
@@ -51,13 +44,13 @@ var bossRight;
 //HUD variables
 var myHearts;
 var myHeartIcon;
-var numHearts = 3;
+
 var myMoney;
 var myMoneyIcon;
-var numMoney = 0;
+
 var myKeys;
 var myKeyIcon;
-var numKeys = 0;
+
 var myHighScore;
 var myHighScoreIcon;
 
@@ -75,16 +68,29 @@ var nextLevelTeleport;
 var bossGrunt;
 var bossDeath;
 
-//Global variables
+//Misc. variables
 var roomX = 0;
 var roomY = 0;
-var level = 1;
+
 var currentRoom;
 var transitionDirection;
 var direction = "u";
-var enemySpeed = 1;
+
 var opacity = 0;
 var titleFlag = true;
+
+//Set up high score
+var highScore;
+if(localStorage.getItem("HighScore") === null) {
+		highScore = 0;
+} else {
+	text = localStorage.getItem("HighScore");
+	highScore = JSON.parse(text);
+}
+window.localStorage.clear();
+text = JSON.stringify(highScore);
+localStorage.setItem("HighScore", text);
+
 
 //StartGame: Gets called when loaded. Calls the start method of myGameArea and create components
 function startGame() {
@@ -217,11 +223,13 @@ var myGameArea = {
 		clearInterval(this.interval);
 		window.localStorage.clear();
 		
+		
 		if (numMoney > highScore) {
 			highScore = numMoney;
-			text = JSON.stringify(highScore);
-			localStorage.setItem("HighScore", text);
 		}
+		
+		text = JSON.stringify(highScore);
+		localStorage.setItem("HighScore", text);
 		
 		numHearts = 3;
 		numMoney = 0;
@@ -251,6 +259,8 @@ var myGameArea = {
 		roomY = 0;
 		bossDmg = 0;
 		window.localStorage.clear()
+		text = JSON.stringify(highScore);
+		localStorage.setItem("HighScore", text);
 		deleteObjects();
 		myGoals.splice(0,1);
 		levelMusic.stop();
@@ -386,7 +396,8 @@ function component(width, height, color, x, y, type) {
         this.x += this.speedX;
         this.y += this.speedY;
     }
-
+	
+	//Detect Collision
 	this.crashWith = function(otherobj) {
 		var myleft = this.x;
 		var myright = this.x + (this.width);
@@ -431,10 +442,8 @@ function updateGameArea() {
 	//Condition to end game
 	if (numHearts < 1) myGameArea.stop();
 
-    
 	//Clear screen
     myGameArea.clear();
-	
 	
 	//Count frames
 	myGameArea.frameNo += 1;
@@ -812,6 +821,7 @@ function updateGameArea() {
 		myHeartIcon.update();
 		myHighScoreIcon.update();
 
+	//Update objects
 	for (i = 0; i < myBlocks.length; i += 1) {
 		myBlocks[i].update();
 	}
@@ -849,299 +859,6 @@ function updateGameArea() {
 function everyInterval(n) {
 	if ((myGameArea.frameNo / n) % 1 == 0 ) {return true;}
 	return false;
-}
-
-function updateTransition() {
-	
-	myGameArea.clear();
-	myBlackScreen.update();
-	
-	if (transitionDirection == "North") {
-		if(myGamePiece.y < 370) {
-			myGamePiece.speedY = 6;
-			myGamePiece.speedX = 0;
-			myGamePiece.newPos();
-			myGamePiece.update();
-		}
-		else {
-			myGamePiece.speedY = 0;
-			myGameArea.update();
-		}
-	}
-	if (transitionDirection == "South") {
-		if(myGamePiece.y > 50) {
-			myGamePiece.speedY = -6;
-			myGamePiece.speedX = 0;
-			myGamePiece.newPos();
-			myGamePiece.update();
-		}
-		else {
-			myGamePiece.speedY = 0;
-			myGameArea.update();
-		}
-	}
-	if (transitionDirection == "West") {
-		if(myGamePiece.x < 460) {
-			myGamePiece.speedX = 6;
-			myGamePiece.speedY = 0;
-			myGamePiece.newPos();
-			myGamePiece.update();
-		}
-		else {
-			myGamePiece.speedX = 0;
-			myGameArea.update();
-		}
-	}
-	if (transitionDirection == "East") {
-		if(myGamePiece.x > -10) {
-			myGamePiece.speedX = -6;
-			myGamePiece.speedY = 0;
-			myGamePiece.newPos();
-			myGamePiece.update();
-		}
-		else {
-			myGamePiece.speedX = 0;
-			myGameArea.update();
-		}
-	}
-	
-}
-
-//solidCollision: sets up collision properties for solid objects
-function solidCollision(myObj, myObj2) {
-	if((myObj2.x > (myObj.x + myObj.width)-2) || (myObj.x > (myObj2.x + myObj2.width) -2)) {
-		if (myObj2.x > myObj.x){
-			if(myObj2.speedX < 0){
-				myObj2.speedX = 0;
-			}
-		} else if (myObj2.x < myObj.x){
-			if(myObj2.speedX > 0){
-				myObj2.speedX = 0;
-			}
-		}
-	}
-	
-	else if((myObj2.y > (myObj.y + myObj.height) -2) || (myObj.y > (myObj2.y + myObj2.height) -2)){
-		if (myObj2.y < myObj.y){
-			if(myObj2.speedY > 0){
-				myObj2.speedY = 0;
-			}
-		}
-		if (myObj2.y > myObj.y){
-			if(myObj2.speedY < 0){
-				myObj2.speedY = 0;
-			}
-		}
-	}
-}
-
-//damageCollision: sets up collision properties for damaging objects
-function damageCollision(myObj, myObj2) {
-	if((myObj2.x > (myObj.x + myObj.width)-2) || (myObj.x > (myObj2.x + myObj2.width) -2)) {
-		if (myObj2.x > myObj.x){
-			if(myObj2.speedX < 0){
-				myObj2.speedX = 20;
-			}
-		} else if (myObj2.x < myObj.x){
-			if(myObj2.speedX > 0){
-				myObj2.speedX = -20;
-			}
-		}
-	}
-	else if((myObj2.y > (myObj.y + myObj.height) -2) || (myObj.y > (myObj2.y + myObj2.height) -2)){
-		if (myObj2.y < myObj.y){
-			if(myObj2.speedY > 0){
-				myObj2.speedY = -20;
-			}
-		}
-		if (myObj2.y > myObj.y){
-			if(myObj2.speedY < 0){
-				myObj2.speedY = 20;
-			}
-		}
-	}
-}
-
-//enemyCollision: sets up collision properties for damaging objects
-function enemyCollision(myObj, myObj2) {
-	if((myObj2.x > (myObj.x + myObj.width)-2) || (myObj.x > (myObj2.x + myObj2.width) -2)) {
-		if (myObj2.x > myObj.x){
-			if(myObj2.speedX < 0){
-				myObj.speedX = -20;
-			}
-		} else if (myObj2.x < myObj.x){
-			if(myObj2.speedX > 0){
-				myObj.speedX = 20;
-			}
-		}
-	}
-	else if((myObj2.y > (myObj.y + myObj.height) -2) || (myObj.y > (myObj2.y + myObj2.height) -2)){
-		if (myObj2.y < myObj.y){
-			if(myObj2.speedY > 0){
-				myObj.speedY = 20;
-			}
-		}
-		if (myObj2.y > myObj.y){
-			if(myObj2.speedY < 0){
-				myObj.speedY = -20;
-			}
-		}
-	}
-}
-
-//swordCollision: sets up collision properties for sword collision with objects
-function swordCollision(myObj) {
-	if((swordHitbox.x > (myObj.x + myObj.width)-2) || (myObj.x > (swordHitbox.x + swordHitbox.width) -2)) {
-		if (swordHitbox.x > myObj.x){
-			if(swordHitbox.speedX < 0){
-				myGamePiece.speedX = 5;
-				swordHitWall.play();
-			}
-		} else if (swordHitbox.x < myObj.x){
-			if(swordHitbox.speedX > 0){
-				myGamePiece.speedX = -5;
-				swordHitWall.play();
-			}
-		}
-	}
-	else if((swordHitbox.y > (myObj.y + myObj.height) -2) || (myObj.y > (swordHitbox.y + swordHitbox.height) -2)){
-		if (swordHitbox.y < myObj.y){
-			if(swordHitbox.speedY > 0){
-				myGamePiece.speedY = -5;
-				swordHitWall.play();
-			}
-		}
-		if (swordHitbox.y > myObj.y){
-			if(swordHitbox.speedY < 0){
-				myGamePiece.speedY = 5;
-				swordHitWall.play();
-			}
-		}
-	}
-}
-
-function changeRoom(direction) {
-	transitionDirection = direction;
-	saveRoom();
-	deleteObjects();
-	myGameArea.transition();
-	updateRoom();
-	loadRoom();
-	createObjects();
-}
-
-function createObjects() {
-	for (i = 0; i < currentRoom.numBlocks; i += 1) {
-		myBlocks.push(new component(1, 1, "images/Block.png", currentRoom.blockX[i], currentRoom.blockY[i], "Block"));
-	}
-
-	for (i = 0; i < currentRoom.numEnemies; i += 1) {
-		myEnemies.push(new component(25, 30, "images/Enemy.png", currentRoom.enemyX[i], currentRoom.enemyY[i], "Enemy"));
-	}
-	
-	for (i = 0; i < currentRoom.numGoals; i += 1) {
-		myGoals.push(new component(1, 1, "images/Portal.png", currentRoom.goalX[i], currentRoom.goalY[i], "Goal"));
-	}
-	for (i = 0; i < currentRoom.numBoss; i += 1) {
-		myBoss.push(new component(3, 3, "images/Boss.png", currentRoom.bossX[i], currentRoom.bossY[i], "Boss"));
-	}
-	
-	for (i = 0; i < currentRoom.numDeadEnd; i += 1) {
-		if (currentRoom.deadEnd[i] == "n"){
-			myDeadEnds.push(new component(2, 1, "images/DeadEndNorth.png", 7, 2, "DeadEnd"));
-		}
-		if (currentRoom.deadEnd[i] == "e"){
-			myDeadEnds.push(new component(1, 2, "images/DeadEndEast.png", 15, 6.5, "DeadEnd"));
-		}
-		if (currentRoom.deadEnd[i] == "s"){
-			myDeadEnds.push(new component(2, 1, "images/DeadEndSouth.png", 7, 12, "DeadEnd"));
-		}
-		if (currentRoom.deadEnd[i] == "w"){
-			myDeadEnds.push(new component(1, 2, "images/DeadEndWest.png", 0, 6.5, "DeadEnd"));
-		}
-	}
-	
-	for (i = 0; i < currentRoom.numDoors; i += 1) {
-		if (currentRoom.door[i] == "n"){
-			myDoors.push(new component(2, 1, "images/DoorNorth.png", 7, 2, "Door"));
-		}
-		if (currentRoom.door[i] == "e"){
-			myDoors.push(new component(1, 2, "images/DoorEast.png", 15, 6.5, "Door"));
-		}
-		if (currentRoom.door[i] == "s"){
-			myDoors.push(new component(2, 1, "images/DoorSouth.png", 7, 12, "Door"));
-		}
-		if (currentRoom.door[i] == "w"){
-			myDoors.push(new component(1, 2, "images/DoorWest.png", 0, 6.5, "Door"));
-		}
-	}
-    
-	myChest = new component(1, 1, "images/Chest.png", currentRoom.chestX, currentRoom.chestY, "Chest");
-}
-
-function deleteObjects() {
-	for (i = 0; i < currentRoom.numBlocks; i += 1) {
-		myBlocks.pop();
-	}
-	for (i = 0; i < currentRoom.numEnemies; i += 1) {
-		myEnemies.pop();
-	}
-	for (i = 0; i < currentRoom.numDeadEnd; i += 1) {
-		myDeadEnds.pop();
-	}
-	for (i = 0; i < currentRoom.numDoors; i += 1) {
-		myDoors.pop();
-	}
-	for (i = 0; i < currentRoom.numGoals; i += 1) {
-		myGoals.pop();
-	}
-	for (i = 0; i < currentRoom.numBoss; i += 1) {
-		myBoss.pop();
-	}
-
-	myChest = null;
-}
-	
-function saveRoom() {
-	text = JSON.stringify(currentRoom);
-	localStorage.setItem(myJsonRooms[roomX][roomY], text);
-}
-
-function updateRoom(){
-	if(transitionDirection == "North") {
-		roomY = roomY + 1;
-	}
-	else if(transitionDirection == "South") {
-		roomY = roomY - 1;
-	}
-	else if(transitionDirection == "East") {
-		roomX = roomX + 1;
-	}
-	else if(transitionDirection == "West") {
-		roomX = roomX - 1;
-	}
-}
-
-function loadRoom() {
-	if (level == 1){
-		rooms1();
-	} else if (level == 2){
-		myRooms = [];
-		myJsonRooms = [];
-		rooms2();
-	} else if (level == 3){
-		myRooms = [];
-		myJsonRooms = [];
-		rooms3();
-	}
-	
-	if(localStorage.getItem(myJsonRooms[roomX][roomY]) === null) {
-		currentRoom = myRooms[roomX][roomY];
-	}
-	else{
-		text = localStorage.getItem(myJsonRooms[roomX][roomY]);
-		currentRoom = JSON.parse(text);
-	}
 }
 
 
@@ -1204,153 +921,64 @@ function bossMovement() {
  	}
 }
 
-function animateDown() {
+//room transition sequnce
+function updateTransition() {
 	
-	if (spriteFrame != 0 && spriteFrame != 1) {
-		spriteFrame = 0;
+	myGameArea.clear();
+	myBlackScreen.update();
+	
+	if (transitionDirection == "North") {
+		if(myGamePiece.y < 370) {
+			myGamePiece.speedY = 6;
+			myGamePiece.speedX = 0;
+			myGamePiece.newPos();
+			myGamePiece.update();
+		}
+		else {
+			myGamePiece.speedY = 0;
+			myGameArea.update();
+		}
+	}
+	if (transitionDirection == "South") {
+		if(myGamePiece.y > 50) {
+			myGamePiece.speedY = -6;
+			myGamePiece.speedX = 0;
+			myGamePiece.newPos();
+			myGamePiece.update();
+		}
+		else {
+			myGamePiece.speedY = 0;
+			myGameArea.update();
+		}
+	}
+	if (transitionDirection == "West") {
+		if(myGamePiece.x < 460) {
+			myGamePiece.speedX = 6;
+			myGamePiece.speedY = 0;
+			myGamePiece.newPos();
+			myGamePiece.update();
+		}
+		else {
+			myGamePiece.speedX = 0;
+			myGameArea.update();
+		}
+	}
+	if (transitionDirection == "East") {
+		if(myGamePiece.x > -10) {
+			myGamePiece.speedX = -6;
+			myGamePiece.speedY = 0;
+			myGamePiece.newPos();
+			myGamePiece.update();
+		}
+		else {
+			myGamePiece.speedX = 0;
+			myGameArea.update();
+		}
 	}
 	
-	if (everyInterval(5)) {
-		spriteFrame = myGameArea.frameNo % 2;
-	}
 }
 
-function animateUp() {
-	
-	if (spriteFrame != 2 && spriteFrame != 3) {
-		spriteFrame = 2;
-	}
-	
-	if (everyInterval(5)) {
-		spriteFrame = myGameArea.frameNo % 2;
-		spriteFrame = spriteFrame + 2;
-	}
-}
-
-function animateRight() {
-	
-	if (spriteFrame != 4 && spriteFrame != 5) {
-		spriteFrame = 4;
-	}
-	
-	if (everyInterval(5)) {
-		spriteFrame = myGameArea.frameNo % 2;
-		spriteFrame = spriteFrame + 4;
-	}
-}
-
-function animateLeft() {
-	
-	if (spriteFrame != 6 && spriteFrame != 7) {
-		spriteFrame = 6;
-	}
-	
-	if (everyInterval(5)) {
-		spriteFrame = myGameArea.frameNo % 2;
-		spriteFrame = spriteFrame + 6;
-	}
-}
-
-function animateSwordDown() {
-	
-	if (spriteFrame != 8 && spriteFrame != 9) {
-		spriteFrame = 8;
-	}
-	
-	if (everyInterval(5)) {
-		spriteFrame = myGameArea.frameNo % 2;
-		spriteFrame = spriteFrame + 8;
-	}
-}
-
-function animateSwordUp() {
-	
-	if (spriteFrame != 10 && spriteFrame != 11) {
-		spriteFrame = 10;
-	}
-	
-	if (everyInterval(5)) {
-		spriteFrame = myGameArea.frameNo % 2;
-		spriteFrame = spriteFrame + 10;
-	}
-}
-
-function animateSwordRight() {
-	
-	if (spriteFrame != 12 && spriteFrame != 13) {
-		spriteFrame = 12;
-	}
-	
-	if (everyInterval(5)) {
-		spriteFrame = myGameArea.frameNo % 2;
-		spriteFrame = spriteFrame + 12;
-	}
-}
-
-function animateSwordLeft() {
-	
-	if (spriteFrame != 14 && spriteFrame != 15) {
-		spriteFrame = 14;
-	}
-	
-	if (everyInterval(5)) {
-		spriteFrame = myGameArea.frameNo % 2;
-		spriteFrame = spriteFrame + 14;
-	}
-}
-
-function animateEnemy() {
-	
-	if (everyInterval(15)) {
-		enemyFrame = myGameArea.frameNo % 2;
-	}
-}
-
-function animateBossRight() {
-	if (everyInterval(5)) {
-		bossFrame = myGameArea.frameNo % 4;
-	}
-
-}
-
-function animateBossLeft() {
-	if (everyInterval(5)) {
-		bossFrame = myGameArea.frameNo % 4;
-		bossFrame = bossFrame + 4;
-	}
-}
-
-function animateBossDamage() {
-	if (everyInterval(10)) {
-		bossFrame = myGameArea.frameNo % 8;
-		bossFrame = bossFrame + 8;
-	}
-}
-
-function animatePortal() {
-	if (everyInterval(15)) {
-		portalFrame = myGameArea.frameNo % 2;
-	}
-}
-
-function animateSpin() {
-	if (spriteFrame == 0) {
-		spriteFrame = 4;
-	}
-	else if (spriteFrame == 4) {
-		spriteFrame = 2;
-	}
-	else if (spriteFrame == 2) {
-		spriteFrame = 6;
-	}
-	else if (spriteFrame == 6) {
-		spriteFrame = 0;
-	}
-	else {
-		spriteFrame = 0
-	}
-}
-
+//level change sequence
 function nextLevel() {
 	myGameArea.clear();
 	myBlackScreen.update();
@@ -1369,6 +997,7 @@ function nextLevel() {
 	
 }
 
+//screen fade in
 function showScreen() {
 	opacity = opacity + 0.01;
 	screen.update();
@@ -1379,7 +1008,7 @@ function showScreen() {
 	}
 }
 
-
+//Title screen sequence
 function titleScreen() {
 	opacity = 1;
 	screen.update();
@@ -1395,8 +1024,6 @@ function titleScreen() {
 			//Starts the game
 			myGameArea.update();
 		}
-	
-	
 }
 
 //starts the game once the page is loaded.
