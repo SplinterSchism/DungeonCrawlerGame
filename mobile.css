@@ -3,6 +3,12 @@ article, aside, body, dd, div, dl, dt, figcaption, figure, footer, h1, h2, h3, h
   padding: 0;
 }
 
+body 
+{
+    background: #6AD5CB;
+
+}	
+
 canvas {
     border: 1px solid #d3d3d3;
     background-color: #f1f1f1;
@@ -25,13 +31,46 @@ canvas {
   text-align: center;
 }
 
+#titleBar
+{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #1D4E89;
+    display:flex;
+    justify-content: space-between;
+	font-size: 150%;
+	font-family: Sans-Serif;
+
+}
+
+#titleBar li 
+{
+    display: inline-flex;
+    color: #D8DBE2;
+    text-align: center;
+	margin: auto 0;
+    padding: 16px;
+    text-decoration: none;
+}
+
+
+
 @media all and (orientation:portrait) {
 	canvas {
 		width: 100vw;
 	}
+	#title
+	{
+	font-size: 70%;
+	}
 }
 
 @media all and (orientation:landscape) {
+	#titleBar {
+		display:none;
+	}
 	#box{
 		width: 100vw;
 	}
@@ -71,4 +110,10 @@ canvas {
 		width: 9% !important;
 		left: 9% !important;
 	}
+	
+	#fireButton {
+		width: 25% !important;
+	}
 }
+
+

@@ -4,6 +4,72 @@ article, aside, body, dd, div, dl, dt, figcaption, figure, footer, h1, h2, h3, h
 }
 
 canvas {
+	zoom: 170%;
+	
+	margin: 10px;
+	
     border: 1px solid #d3d3d3;
     background-color: #f1f1f1;
+}
+
+
+
+body 
+{
+    background: #6AD5CB;
+	
+	text-align: center;
+
+}	
+
+h1 {
+	font-size: 60pt;
+	margin: 20px;
+	margin-bottom: 5px;
+}
+
+h2 {
+	font-size: 20pt;
+	margin: 5px;
+
+}
+
+article {
+	
+	background: #D8DBE2;
+	
+	margin: 50px 300px;
+}
+
+#titleBar
+{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #1D4E89;
+    display:flex;
+    justify-content: space-between;
+	font-size: 200%;
+	font-family: Sans-Serif;
+
+}
+
+#titleBar li 
+{
+    display: inline-flex;
+    color: #D8DBE2;
+    text-align: center;
+	margin: auto 0;
+    padding: 16px;
+    text-decoration: none;
+}
+
+
+@media all and (orientation:portrait)
+{
+	#title
+	{
+	font-size: 70%;
+	}
 }
